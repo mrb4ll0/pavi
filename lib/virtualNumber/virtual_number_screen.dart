@@ -195,7 +195,7 @@ class _VirtualNumberPageState extends State<VirtualNumberPage>
     final daysLeft = number.expiresOn.difference(DateTime.now()).inDays;
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.15),
         borderRadius: BorderRadius.circular(20),
@@ -355,7 +355,7 @@ class _VirtualNumberPageState extends State<VirtualNumberPage>
             sliver: SliverGrid(
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
-                childAspectRatio: 0.85,
+                childAspectRatio: 0.75,
                 crossAxisSpacing: 12,
                 mainAxisSpacing: 12,
               ),
@@ -461,6 +461,7 @@ class _VirtualNumberPageState extends State<VirtualNumberPage>
           padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: [
               // Carrier badge
               Row(
@@ -528,7 +529,6 @@ class _VirtualNumberPageState extends State<VirtualNumberPage>
                   ],
                 ),
               )),
-              const Spacer(),
               // Price and rent button
               Row(
                 children: [
