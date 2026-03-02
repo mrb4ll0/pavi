@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:pavi/home/message/messageListScreen.dart';
+import 'package:pavi/home/wallet/screen/wallet_screen.dart';
 import '../theme/generalTheme.dart';
+import '../virtualNumber/virtual_number_screen.dart';
 import 'dialer/dialerPage.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -18,7 +20,7 @@ class _HomeScreenState extends State<HomeScreen> {
     const DialerScreen(),
     const MessageListScreen(),
     const WalletScreen(),
-    const VirtualNumberScreen(),
+    const VirtualNumberPage(),
 
   ];
 
@@ -865,33 +867,3 @@ class HomeDashboard extends StatelessWidget {
     );
   }
 }
-
-
-class WalletScreen extends StatelessWidget {
-  const WalletScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text(
-        'Wallet Screen',
-        style: context.titleLarge,
-      ),
-    );
-  }
-}
-
-class VirtualNumberScreen extends StatelessWidget {
-  const VirtualNumberScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text(
-        'Virtual Number Screen',
-        style: context.titleLarge,
-      ),
-    );
-  }
-}
-
