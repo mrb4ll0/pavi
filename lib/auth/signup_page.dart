@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../core/constant/appString.dart';
 import '../core/general/generalMethods.dart';
-import '../home/home_screen.dart';
+import '../home/homeScreen/home_screen.dart';
 import '../theme/generalTheme.dart';
 
 class SignupScreen extends StatefulWidget {
@@ -154,7 +154,7 @@ class _SignupScreenState extends State<SignupScreen> {
         ),
       );
       // Navigate to home screen
-      GeneralMethods.navigateTo(context, const HomeScreen());
+      GeneralMethods.navigateTo(context,  HomeScreen());
     });
   }
 

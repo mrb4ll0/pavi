@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pavi/theme/generalTheme.dart';
@@ -15,7 +17,9 @@ class _DialerScreenState extends State<DialerScreen> with SingleTickerProviderSt
   final TextEditingController _numberController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
   late TabController _tabController;
-
+  // Add these variables to your state class
+  Timer? _deleteTimer;
+  bool _isLongPressing = false;
 
   bool _isSearching = false;
   String _dialedNumber = '';
@@ -56,6 +60,28 @@ class _DialerScreenState extends State<DialerScreen> with SingleTickerProviderSt
         TextPosition(offset: _dialedNumber.length),
       );
     });
+  }
+
+  void _startContinuousDelete() {
+    _isLongPressing = true;
+
+    // Immediate first deletion
+    _onDeletePressed();
+
+    // Then continue deleting every 100ms while holding
+    _deleteTimer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
+      if (_isLongPressing && mounted) {
+        _onDeletePressed();
+      } else {
+        timer.cancel();
+      }
+    });
+  }
+
+  void _stopContinuousDelete() {
+    _isLongPressing = false;
+    _deleteTimer?.cancel();
+    _deleteTimer = null;
   }
 
   void _onDeletePressed() {
@@ -103,6 +129,7 @@ class _DialerScreenState extends State<DialerScreen> with SingleTickerProviderSt
     return Scaffold(
       backgroundColor: context.offWhite,
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: Colors.white,
         elevation: 0,
         title: _isSearching
@@ -148,219 +175,276 @@ class _DialerScreenState extends State<DialerScreen> with SingleTickerProviderSt
           ),
         ],
       ),
-      body: Column(
-        children: [
-          // Number Display
-          if (!_isSearching) ...[
-            Container(
-              padding: EdgeInsets.all(context.spacingXL),
-              child: Column(
-                children: [
-                  Text(
-                    'Enter Number',
-                    style: context.bodySmall?.copyWith(
-                      color: context.mediumGray,
-                    ),
-                  ),
-                  SizedBox(height: context.spacingSM),
-                  Text(
-                    _dialedNumber.isEmpty ? '---' : _dialedNumber,
-                    style: context.displaySmall?.copyWith(
-                      fontSize: 32,
-                      letterSpacing: 2,
-                      color: context.deepNavy,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
+      body: _isSearching ? _buildSearchView() : _buildDialerView(),
+    );
+  }
 
-          // Search Results or Call Type Tabs
-          if (_isSearching)
-            Expanded(
-              child: ListView.builder(
-                padding: EdgeInsets.all(context.spacingMD),
-                itemCount: _searchResults.length,
-                itemBuilder: (context, index) {
-                  final contact = _searchResults[index];
-                  return ListTile(
-                    leading: Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        gradient: context.primaryGradient,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Center(
-                        child: Text(
-                          contact.name[0],
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ),
-                    title: Text(
-                      contact.name,
-                      style: context.bodyMedium?.copyWith(
+  Widget _buildSearchView() {
+    return Column(
+      children: [
+        Expanded(
+          child: ListView.builder(
+            padding: EdgeInsets.all(context.spacingMD),
+            itemCount: _searchResults.length,
+            itemBuilder: (context, index) {
+              final contact = _searchResults[index];
+              return ListTile(
+                leading: Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    gradient: context.primaryGradient,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Center(
+                    child: Text(
+                      contact.name[0],
+                      style: const TextStyle(
+                        color: Colors.white,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    subtitle: Text(
-                      contact.number,
-                      style: context.bodySmall?.copyWith(
-                        color: context.mediumGray,
-                      ),
-                    ),
-                    trailing: Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: context.spacingSM,
-                        vertical: context.spacingXXS,
-                      ),
-                      decoration: BoxDecoration(
-                        color: context.primaryGreen.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(context.radiusSM),
-                      ),
-                      child: Text(
-                        contact.type,
-                        style: context.labelSmall?.copyWith(
-                          color: context.primaryGreen,
-                        ),
-                      ),
-                    ),
-                    onTap: () {
-                      setState(() {
-                        _dialedNumber = contact.number.replaceAll(' ', '');
-                        _numberController.text = _dialedNumber;
-                        _isSearching = false;
-                      });
-                    },
-                  );
-                },
-              ),
-            )
-          else ...[
-            // Call Type Tabs
-            Container(
-              margin: EdgeInsets.symmetric(horizontal: context.spacingLG),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(context.radiusLG),
-                boxShadow: context.shadowSM,
-              ),
-              child: TabBar(
-                controller: _tabController,
-                indicator: BoxDecoration(
-                  borderRadius: BorderRadius.circular(context.radiusLG),
-                  color: context.primaryGreen.withOpacity(0.1),
+                  ),
                 ),
-                labelColor: context.primaryGreen,
-                unselectedLabelColor: context.mediumGray,
-                tabs: const [
-                  Tab(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.wifi, size: 18),
-                        SizedBox(width: 4),
-                        Text('App-to-App'),
-                      ],
+                title: Text(
+                  contact.name,
+                  style: context.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                subtitle: Text(
+                  contact.number,
+                  style: context.bodySmall?.copyWith(
+                    color: context.mediumGray,
+                  ),
+                ),
+                trailing: Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: context.spacingSM,
+                    vertical: context.spacingXXS,
+                  ),
+                  decoration: BoxDecoration(
+                    color: context.primaryGreen.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(context.radiusSM),
+                  ),
+                  child: Text(
+                    contact.type,
+                    style: context.labelSmall?.copyWith(
+                      color: context.primaryGreen,
                     ),
                   ),
-                  Tab(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.phone, size: 18),
-                        SizedBox(width: 4),
-                        Text('App-to-Phone'),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(height: context.spacingMD),
+                ),
+                onTap: () {
+                  setState(() {
+                    _dialedNumber = contact.number.replaceAll(' ', '');
+                    _numberController.text = _dialedNumber;
+                    _isSearching = false;
+                  });
+                },
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
 
-            // Call Type Details
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: context.spacingLG),
-              child: Row(
-                children: [
-                  Icon(
-                    _selectedCallType == CallType.appToApp
-                        ? Icons.check_circle
-                        : Icons.radio_button_unchecked,
-                    size: 16,
-                    color: _selectedCallType == CallType.appToApp
-                        ? context.primaryGreen
-                        : context.mediumGray,
-                  ),
-                  SizedBox(width: context.spacingXS),
-                  Expanded(
-                    child: Text(
-                      'Free call to other app users',
-                      style: context.bodySmall?.copyWith(
-                        color: _selectedCallType == CallType.appToApp
-                            ? context.primaryGreen
-                            : context.mediumGray,
-                      ),
-                    ),
-                  ),
-                  Text(
-                    'Free',
-                    style: context.bodySmall?.copyWith(
-                      color: context.success,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
+  Widget _buildDialerView() {
+    return Column(
+      children: [
+        // Number Display - Single line with horizontal scrolling
+        Container(
+          padding: EdgeInsets.symmetric(
+            horizontal: context.spacingXL,
+            vertical: context.spacingMD,
+          ),
+          child: Column(
+            children: [
+              Text(
+                'Enter Number',
+                style: context.bodySmall?.copyWith(
+                  color: context.mediumGray,
+                ),
               ),
-            ),
-            if (_selectedCallType == CallType.appToPhone) ...[
-              SizedBox(height: context.spacingSM),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: context.spacingLG),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.info_outline,
-                      size: 16,
-                      color: context.actionAmber,
-                    ),
-                    SizedBox(width: context.spacingXS),
-                    Expanded(
-                      child: Text(
-                        'Rate: ₦25/min to Nigerian numbers',
-                        style: context.bodySmall?.copyWith(
-                          color: context.actionAmber,
+              SizedBox(height: context.spacingXS),
+              // Single line with horizontal scrolling
+              Container(
+                height: 50,
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  reverse: true, // Start from the right (newest digits)
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: _dialedNumber.isEmpty
+                        ? [
+                      Container(
+                        padding: EdgeInsets.symmetric(horizontal: 8),
+                        child: Text(
+                          '---',
+                          style: context.displaySmall?.copyWith(
+                            fontSize: 32,
+                            letterSpacing: 2,
+                            color: context.deepNavy,
+                          ),
                         ),
                       ),
-                    ),
+                    ]
+                        : _dialedNumber.split('').map((digit) {
+                      return Container(
+                        padding: EdgeInsets.symmetric(horizontal: 2),
+                        child: Text(
+                          digit,
+                          style: context.displaySmall?.copyWith(
+                            fontSize: 32,
+                            letterSpacing: 2,
+                            color: context.deepNavy,
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+
+        // Call Type Tabs
+        Container(
+          margin: EdgeInsets.symmetric(horizontal: context.spacingLG),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(context.radiusLG),
+            boxShadow: context.shadowSM,
+          ),
+          child: TabBar(
+            controller: _tabController,
+            indicator: BoxDecoration(
+              borderRadius: BorderRadius.circular(context.radiusLG),
+              color: context.primaryGreen.withOpacity(0.1),
+            ),
+            labelColor: context.primaryGreen,
+            unselectedLabelColor: context.mediumGray,
+            tabs: const [
+              Tab(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.wifi, size: 18),
+                    SizedBox(width: 4),
+                    Text('App-to-App'),
+                  ],
+                ),
+              ),
+              Tab(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.phone, size: 18),
+                    SizedBox(width: 4),
+                    Text('App-to-Phone'),
                   ],
                 ),
               ),
             ],
+          ),
+        ),
+        SizedBox(height: context.spacingSM),
 
-            // T9 Keypad
-            Expanded(
-              child: Container(
-                margin: EdgeInsets.all(context.spacingLG),
-                padding: EdgeInsets.all(context.spacingMD),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(context.radiusXL),
-                  boxShadow: context.shadowMD,
+        // Call Type Details - More compact
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: context.spacingLG),
+          child: Row(
+            children: [
+              Icon(
+                _selectedCallType == CallType.appToApp
+                    ? Icons.check_circle
+                    : Icons.radio_button_unchecked,
+                size: 14,
+                color: _selectedCallType == CallType.appToApp
+                    ? context.primaryGreen
+                    : context.mediumGray,
+              ),
+              SizedBox(width: context.spacingXS),
+              Expanded(
+                child: Text(
+                  'Free call to other app users',
+                  style: context.bodySmall?.copyWith(
+                    fontSize: 12,
+                    color: _selectedCallType == CallType.appToApp
+                        ? context.primaryGreen
+                        : context.mediumGray,
+                  ),
                 ),
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: GridView.count(
+              ),
+              Text(
+                'Free',
+                style: context.bodySmall?.copyWith(
+                  fontSize: 12,
+                  color: context.success,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ),
+        if (_selectedCallType == CallType.appToPhone) ...[
+          SizedBox(height: context.spacingXS),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: context.spacingLG),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.info_outline,
+                  size: 14,
+                  color: context.actionAmber,
+                ),
+                SizedBox(width: context.spacingXS),
+                Expanded(
+                  child: Text(
+                    'Rate: ₦25/min',
+                    style: context.bodySmall?.copyWith(
+                      fontSize: 12,
+                      color: context.actionAmber,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+
+        // T9 Keypad - Takes remaining space with adjusted aspect ratio
+        Expanded(
+          child: Container(
+            margin: EdgeInsets.fromLTRB(
+              context.spacingLG,
+              context.spacingSM,
+              context.spacingLG,
+              context.spacingLG,
+            ),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(context.radiusXL),
+              boxShadow: context.shadowMD,
+            ),
+            child: Column(
+              children: [
+                // Grid takes most of the space - adjusted aspect ratio
+                Expanded(
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      // Calculate aspect ratio to ensure all buttons fit
+                      // 4 rows of buttons, each with some spacing
+                      double availableHeight = constraints.maxHeight;
+                      double buttonHeight = availableHeight / 4.2; // Slightly less than 1/4 for spacing
+                      double aspectRatio = constraints.maxWidth / 3 / buttonHeight;
+
+                      return GridView.count(
                         crossAxisCount: 3,
-                        childAspectRatio: 1.2,
+                        childAspectRatio: aspectRatio * 0.9, // Slightly reduce to ensure fit
                         physics: const NeverScrollableScrollPhysics(),
+                        padding: EdgeInsets.zero,
                         children: [
                           _buildKeyButton('1', ''),
                           _buildKeyButton('2', 'ABC'),
@@ -375,100 +459,104 @@ class _DialerScreenState extends State<DialerScreen> with SingleTickerProviderSt
                           _buildKeyButton('0', '+'),
                           _buildKeyButton('#', ''),
                         ],
-                      ),
-                    ),
-
-                    // Bottom Row with Call and Delete
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        // Call Type Selector (simplified for UI)
-                        GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              _selectedCallType = _selectedCallType == CallType.appToApp
-                                  ? CallType.appToPhone
-                                  : CallType.appToApp;
-                              _tabController.animateTo(
-                                _selectedCallType == CallType.appToApp ? 0 : 1,
-                              );
-                            });
-                          },
-                          child: Container(
-                            width: 60,
-                            height: 60,
-                            decoration: BoxDecoration(
-                              color: context.lightGray.withOpacity(0.3),
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(
-                              _selectedCallType == CallType.appToApp
-                                  ? Icons.wifi
-                                  : Icons.phone,
-                              color: _selectedCallType == CallType.appToApp
-                                  ? context.primaryGreen
-                                  : context.actionAmber,
-                              size: 24,
-                            ),
-                          ),
-                        ),
-
-                        // Call Button
-                        GestureDetector(
-                          onTap: _startCall,
-                          child: Container(
-                            width: 70,
-                            height: 70,
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [
-                                  context.primaryGreen,
-                                  context.primaryGreenDark,
-                                ],
-                              ),
-                              shape: BoxShape.circle,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: context.primaryGreen.withOpacity(0.3),
-                                  blurRadius: 8,
-                                  spreadRadius: 2,
-                                ),
-                              ],
-                            ),
-                            child: const Icon(
-                              Icons.phone,
-                              color: Colors.white,
-                              size: 30,
-                            ),
-                          ),
-                        ),
-
-                        // Delete Button
-                        GestureDetector(
-                          onTap: _onDeletePressed,
-                          child: Container(
-                            width: 60,
-                            height: 60,
-                            decoration: BoxDecoration(
-                              color: context.lightGray.withOpacity(0.3),
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(
-                              Icons.backspace_outlined,
-                              color: context.darkGray,
-                              size: 24,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: context.spacingSM),
-                  ],
+                      );
+                    },
+                  ),
                 ),
-              ),
+
+                // Bottom Action Row
+                Container(
+                  height: 70,
+                  padding: EdgeInsets.symmetric(vertical: context.spacingSM),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      _buildBottomActionButton(
+                        icon: _selectedCallType == CallType.appToApp
+                            ? Icons.wifi : Icons.phone,
+                        color: _selectedCallType == CallType.appToApp
+                            ? context.primaryGreen : context.actionAmber,
+                        onTap: () {
+                          setState(() {
+                            _selectedCallType = _selectedCallType == CallType.appToApp
+                                ? CallType.appToPhone
+                                : CallType.appToApp;
+                            _tabController.animateTo(
+                              _selectedCallType == CallType.appToApp ? 0 : 1,
+                            );
+                          });
+                        },
+                      ),
+                      _buildCallButton(),
+                      _buildBottomActionButton(
+                        icon: Icons.backspace_outlined,
+                        color: context.darkGray,
+                        onTap: _onDeletePressed,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBottomActionButton({
+    required IconData icon,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      onLongPress: _startContinuousDelete, // Start continuous delete
+      onLongPressUp: _stopContinuousDelete, // Stop when released
+      onLongPressCancel: _stopContinuousDelete,
+      child: Container(
+        width: 50,
+        height: 50,
+        decoration: BoxDecoration(
+          color: context.lightGray.withOpacity(0.3),
+          shape: BoxShape.circle,
+        ),
+        child: Icon(
+          icon,
+          color: color,
+          size: 22,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCallButton() {
+    return GestureDetector(
+      onTap: _startCall,
+      child: Container(
+        width: 60,
+        height: 60,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              context.primaryGreen,
+              context.primaryGreenDark,
+            ],
+          ),
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: context.primaryGreen.withOpacity(0.3),
+              blurRadius: 8,
+              spreadRadius: 2,
             ),
           ],
-        ],
+        ),
+        child: const Icon(
+          Icons.phone,
+          color: Colors.white,
+          size: 26,
+        ),
       ),
     );
   }
@@ -480,7 +568,7 @@ class _DialerScreenState extends State<DialerScreen> with SingleTickerProviderSt
         onTap: () => _onKeyPressed(main),
         borderRadius: BorderRadius.circular(context.radiusCircular),
         child: Container(
-          margin: EdgeInsets.all(context.spacingXS),
+          margin: EdgeInsets.all(2),
           decoration: BoxDecoration(
             shape: BoxShape.circle,
           ),
@@ -491,7 +579,7 @@ class _DialerScreenState extends State<DialerScreen> with SingleTickerProviderSt
                 Text(
                   main,
                   style: context.titleLarge?.copyWith(
-                    fontSize: 28,
+                    fontSize: 20, // Smaller font to ensure fit
                     fontWeight: FontWeight.w500,
                     color: context.deepNavy,
                   ),
@@ -501,7 +589,7 @@ class _DialerScreenState extends State<DialerScreen> with SingleTickerProviderSt
                     sub,
                     style: context.labelSmall?.copyWith(
                       color: context.mediumGray,
-                      fontSize: 10,
+                      fontSize: 8, // Smaller font
                     ),
                   ),
               ],
@@ -512,8 +600,6 @@ class _DialerScreenState extends State<DialerScreen> with SingleTickerProviderSt
     );
   }
 }
-
-
 
 class Contact {
   final String name;

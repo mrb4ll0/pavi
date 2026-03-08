@@ -85,6 +85,7 @@ class _MessageListScreenState extends State<MessageListScreen> {
     return Scaffold(
       backgroundColor: context.offWhite,
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: Colors.white,
         elevation: 0,
         title: Text(

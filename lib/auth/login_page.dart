@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:pavi/auth/signup_page.dart';
 import 'package:pavi/core/general/generalMethods.dart';
 import '../core/constant/appString.dart';
-import '../home/home_screen.dart';
+import '../home/homeScreen/home_screen.dart';
 import '../theme/generalTheme.dart';
 
 
@@ -58,7 +58,7 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         );
         // below need to be changed to replaceWith , but for now it will be navigateTo
-        GeneralMethods.navigateTo(context, const HomeScreen());
+        GeneralMethods.navigateTo(context,  HomeScreen());
       });
     }
   }

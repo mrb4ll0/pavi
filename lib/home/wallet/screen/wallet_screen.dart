@@ -83,6 +83,7 @@ class _WalletScreenState extends State<WalletScreen> {
     return Scaffold(
       backgroundColor: context.offWhite,
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: Colors.white,
         elevation: 0,
         title: Text(
@@ -242,10 +243,12 @@ class _WalletScreenState extends State<WalletScreen> {
                 child: Icon(icon, size: 16, color: color),
               ),
               SizedBox(width: context.spacingSM),
-              Text(
-                title,
-                style: context.bodySmall?.copyWith(
-                  color: context.mediumGray,
+              Expanded(
+                child: Text(
+                  title,
+                  style: context.bodySmall?.copyWith(
+                    color: context.mediumGray,
+                  ),
                 ),
               ),
             ],

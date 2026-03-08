@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:pavi/home/homeScreen/esim/esimDetailsPage.dart';
+import 'package:pavi/home/homeScreen/transaction/transactionHistoryPage.dart';
 import 'package:pavi/home/message/messageListScreen.dart';
 import 'package:pavi/home/wallet/screen/wallet_screen.dart';
-import '../theme/generalTheme.dart';
-import '../virtualNumber/virtual_number_screen.dart';
-import 'dialer/dialerPage.dart';
+import '../../core/general/generalMethods.dart';
+import '../../theme/generalTheme.dart';
+import '../../virtualNumber/virtual_number_screen.dart';
+import '../dialer/dialerPage.dart';
+import 'notification.dart'; // Add this import
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+   HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -95,6 +99,55 @@ class _HomeScreenState extends State<HomeScreen> {
 class HomeDashboard extends StatelessWidget {
   const HomeDashboard({super.key});
 
+  // Sample transaction data
+  final List<Map<String, dynamic>> _transactions = const [
+    {
+      'title': 'eSIM Purchase - Nigeria',
+      'amount': '-₦2,500',
+      'date': 'Today, 10:30 AM',
+      'type': 'debit',
+      'status': 'completed',
+      'icon': Icons.sim_card,
+      'colorValue': 0xFF4CAF50,
+    },
+    {
+      'title': 'Wallet Top-up',
+      'amount': '+₦5,000',
+      'date': 'Yesterday, 8:15 PM',
+      'type': 'credit',
+      'status': 'completed',
+      'icon': Icons.account_balance_wallet,
+      'colorValue': 0xFF2196F3,
+    },
+    {
+      'title': 'Calling Plan - Unlimited',
+      'amount': '-₦3,500',
+      'date': 'Yesterday, 3:20 PM',
+      'type': 'debit',
+      'status': 'completed',
+      'icon': Icons.phone,
+      'colorValue': 0xFFFF9800,
+    },
+    {
+      'title': 'Referral Bonus',
+      'amount': '+₦1,000',
+      'date': '2 days ago',
+      'type': 'credit',
+      'status': 'completed',
+      'icon': Icons.share,
+      'colorValue': 0xFF9C27B0,
+    },
+    {
+      'title': 'eSIM Purchase - UK',
+      'amount': '-₦4,500',
+      'date': '3 days ago',
+      'type': 'debit',
+      'status': 'pending',
+      'icon': Icons.sim_card,
+      'colorValue': 0xFFF44336,
+    },
+  ];
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -150,17 +203,23 @@ class HomeDashboard extends StatelessWidget {
                   ),
                   Row(
                     children: [
-                      Container(
-                        padding: EdgeInsets.all(context.spacingXS),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                          boxShadow: context.shadowSM,
-                        ),
-                        child: Icon(
-                          Icons.notifications_none_outlined,
-                          size: 20,
-                          color: context.deepNavy,
+                      GestureDetector(
+                        onTap: () {
+                          debugPrint("🔔 Notification icon tapped");
+                          GeneralMethods.navigateTo(context,  NotificationPage());
+                        },
+                        child: Container(
+                          padding: EdgeInsets.all(context.spacingXS),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                            boxShadow: context.shadowSM,
+                          ),
+                          child: Icon(
+                            Icons.notifications_none_outlined,
+                            size: 20,
+                            color: context.deepNavy,
+                          ),
                         ),
                       ),
                       SizedBox(width: context.spacingSM),
@@ -349,12 +408,12 @@ class HomeDashboard extends StatelessWidget {
                     ],
                   ),
                   SizedBox(height: context.spacingSM),
-                  Row(
+                  Wrap(
+                    spacing: context.spacingSM,
+                    runSpacing: context.spacingSM,
                     children: [
                       _buildCardTag(context, 'Phone Numbers'),
-                      SizedBox(width: context.spacingSM),
                       _buildCardTag(context, 'Data eSIMs'),
-                      SizedBox(width: context.spacingSM),
                       _buildCardTag(context, 'Calling Plans'),
                     ],
                   ),
@@ -441,6 +500,10 @@ class HomeDashboard extends StatelessWidget {
                     child: Row(
                       children: [
                         _buildPlanCard(
+                          ontap: ()
+                          {
+                            GeneralMethods.navigateTo(context, ESIMDetailsPage( eSIMData: ESIMDetailsPage.sampleESIM,));
+                          },
                           context,
                           title: 'eSIM:',
                           subtitle: 'Nigeria Plan',
@@ -462,6 +525,89 @@ class HomeDashboard extends StatelessWidget {
                       ],
                     ),
                   ),
+                ],
+              ),
+            ),
+
+            SizedBox(height: context.spacingXL),
+
+            // Transaction History Section
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: context.spacingLG),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            padding: EdgeInsets.all(context.spacingXS),
+                            decoration: BoxDecoration(
+                              color: context.primaryGreen.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(context.radiusSM),
+                            ),
+                            child: Icon(
+                              Icons.history,
+                              size: 18,
+                              color: context.primaryGreen,
+                            ),
+                          ),
+                          SizedBox(width: context.spacingSM),
+                          Text(
+                            'Transaction History',
+                            style: context.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                      // In the Transaction History section, update the View All button:
+                      TextButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const TransactionHistoryPage(),
+                            ),
+                          );
+                        },
+                        style: TextButton.styleFrom(
+                          minimumSize: Size.zero,
+                          padding: EdgeInsets.zero,
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        ),
+                        child: Text(
+                          'View All',
+                          style: context.labelSmall?.copyWith(
+                            color: context.primaryGreen,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: context.spacingMD),
+                  ..._transactions.take(3).map((transaction) =>
+                      _buildTransactionItem(context, transaction)
+                  ),
+                  if (_transactions.length > 3)
+                    Padding(
+                      padding: EdgeInsets.only(top: context.spacingSM),
+                      child: Center(
+                        child: TextButton(
+                          onPressed: () {
+                            debugPrint("Show more transactions tapped");
+                          },
+                          child: Text(
+                            '+ ${_transactions.length - 3} more transactions',
+                            style: context.labelSmall?.copyWith(
+                              color: context.primaryGreen,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
                 ],
               ),
             ),
@@ -676,91 +822,189 @@ class HomeDashboard extends StatelessWidget {
     required String days,
     required String price,
     required Color color,
+    VoidCallback? ontap
   }) {
-    return Container(
-      width: 160,
-      padding: EdgeInsets.all(context.spacingMD),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(context.radiusMD),
-        boxShadow: context.shadowSM,
-        border: Border.all(
-          color: context.lightGray,
-          width: 1,
+    return InkWell(
+      onTap: ontap,
+      child: Container(
+        width: 160,
+        padding: EdgeInsets.all(context.spacingMD),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(context.radiusMD),
+          boxShadow: context.shadowSM,
+          border: Border.all(
+            color: context.lightGray,
+            width: 1,
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: context.labelSmall?.copyWith(
+                color: color,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            SizedBox(height: context.spacingXXS),
+            Text(
+              subtitle,
+              style: context.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            SizedBox(height: context.spacingSM),
+            Row(
+              children: [
+                Icon(
+                  Icons.data_usage,
+                  size: 14,
+                  color: context.mediumGray,
+                ),
+                SizedBox(width: context.spacingXXS),
+                Text(
+                  data,
+                  style: context.bodySmall?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: context.spacingXXS),
+            Row(
+              children: [
+                Icon(
+                  Icons.timer_outlined,
+                  size: 14,
+                  color: context.mediumGray,
+                ),
+                SizedBox(width: context.spacingXXS),
+                Text(
+                  '$days days',
+                  style: context.bodySmall,
+                ),
+              ],
+            ),
+            SizedBox(height: context.spacingSM),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  price,
+                  style: context.titleSmall?.copyWith(
+                    color: color,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.all(context.spacingXXS),
+                  decoration: BoxDecoration(
+                    color: color,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.arrow_forward,
+                    size: 12,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+    );
+  }
+
+  Widget _buildTransactionItem(BuildContext context, Map<String, dynamic> transaction) {
+    final isCredit = transaction['type'] == 'credit';
+    final amountColor = isCredit ? context.success : null;
+    final transactionColor = Color(transaction['colorValue'] as int);
+
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: context.spacingSM),
+      decoration: BoxDecoration(
+        border: Border(
+          bottom: BorderSide(
+            color: context.lightGray,
+            width: 1,
+          ),
+        ),
+      ),
+      child: Row(
         children: [
-          Text(
-            title,
-            style: context.labelSmall?.copyWith(
-              color: color,
-              fontWeight: FontWeight.w600,
+          // Icon
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: transactionColor.withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              transaction['icon'] as IconData,
+              color: transactionColor,
+              size: 18,
             ),
           ),
-          SizedBox(height: context.spacingXXS),
-          Text(
-            subtitle,
-            style: context.bodyMedium?.copyWith(
-              fontWeight: FontWeight.w600,
+          SizedBox(width: context.spacingSM),
+
+          // Details
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  transaction['title'] as String,
+                  style: context.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                SizedBox(height: 2),
+                Text(
+                  transaction['date'] as String,
+                  style: context.labelSmall?.copyWith(
+                    color: context.mediumGray,
+                    fontSize: 10,
+                  ),
+                ),
+              ],
             ),
           ),
-          SizedBox(height: context.spacingSM),
-          Row(
+
+          // Amount and Status
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Icon(
-                Icons.data_usage,
-                size: 14,
-                color: context.mediumGray,
-              ),
-              SizedBox(width: context.spacingXXS),
               Text(
-                data,
-                style: context.bodySmall?.copyWith(
+                transaction['amount'] as String,
+                style: context.bodyMedium?.copyWith(
+                  color: amountColor,
                   fontWeight: FontWeight.w600,
                 ),
               ),
-            ],
-          ),
-          SizedBox(height: context.spacingXXS),
-          Row(
-            children: [
-              Icon(
-                Icons.timer_outlined,
-                size: 14,
-                color: context.mediumGray,
-              ),
-              SizedBox(width: context.spacingXXS),
-              Text(
-                '$days days',
-                style: context.bodySmall,
-              ),
-            ],
-          ),
-          SizedBox(height: context.spacingSM),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                price,
-                style: context.titleSmall?.copyWith(
-                  color: color,
-                  fontWeight: FontWeight.bold,
+              if (transaction['status'] == 'pending')
+                Container(
+                  margin: EdgeInsets.only(top: 2),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: context.spacingXS,
+                    vertical: 2,
+                  ),
+                  decoration: BoxDecoration(
+                    color: context.actionAmber.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(context.radiusXS),
+                  ),
+                  child: Text(
+                    'Pending',
+                    style: context.labelSmall?.copyWith(
+                      color: context.actionAmber,
+                      fontSize: 8,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
-              ),
-              Container(
-                padding: EdgeInsets.all(context.spacingXXS),
-                decoration: BoxDecoration(
-                  color: color,
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  Icons.arrow_forward,
-                  size: 12,
-                  color: Colors.white,
-                ),
-              ),
             ],
           ),
         ],
