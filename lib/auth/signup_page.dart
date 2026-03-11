@@ -14,17 +14,17 @@ class SignupScreen extends StatefulWidget {
 
 class _SignupScreenState extends State<SignupScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _identifierController = TextEditingController();
+  final _firstNameController = TextEditingController();
+  final _lastNameController = TextEditingController();
+  final _usernameController = TextEditingController();
+  final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
   final _otpControllers = List.generate(6, (_) => TextEditingController());
   final _otpFocusNodes = List.generate(6, (_) => FocusNode());
 
-  int _currentStep = 1; // 1: Signup, 2: OTP
+  int _currentStep = 1; // 1: Personal Info, 2: Email & Password, 3: OTP
   bool _isPasswordVisible = false;
-  bool _isConfirmPasswordVisible = false;
   bool _isLoading = false;
-  bool _agreeToTerms = false;
   bool _isResendEnabled = true;
   int _resendTimer = 30;
 
@@ -35,9 +35,11 @@ class _SignupScreenState extends State<SignupScreen> {
 
   @override
   void dispose() {
-    _identifierController.dispose();
+    _firstNameController.dispose();
+    _lastNameController.dispose();
+    _usernameController.dispose();
+    _emailController.dispose();
     _passwordController.dispose();
-    _confirmPasswordController.dispose();
     for (var controller in _otpControllers) {
       controller.dispose();
     }
@@ -77,65 +79,121 @@ class _SignupScreenState extends State<SignupScreen> {
     return _otpControllers.map((c) => c.text).join();
   }
 
-  String? _validateIdentifier(String? value) {
-    if (value == null || value.isEmpty) return AppStrings.fieldRequired;
+  String? _validateName(String? value, String fieldName) {
+    if (value == null || value.isEmpty) return '$fieldName is required';
+    if (value.length < 2) return '$fieldName must be at least 2 characters';
+    return null;
+  }
+
+  String? _validateUsername(String? value) {
+    if (value == null || value.isEmpty) return 'Username is required';
+    if (value.length < 3) return 'Username must be at least 3 characters';
+    // Allow letters, numbers, and underscores
+    final usernameRegex = RegExp(r'^[a-zA-Z0-9_]+$');
+    if (!usernameRegex.hasMatch(value)) {
+      return 'Username can only contain letters, numbers, and underscores';
+    }
+    return null;
+  }
+
+  String? _validateEmail(String? value) {
+    if (value == null || value.isEmpty) return 'Email is required';
     final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-    final phoneRegex = RegExp(r'^(?:\+234|0)[7-9][0-1]\d{8}$');
-    if (!emailRegex.hasMatch(value) && !phoneRegex.hasMatch(value)) {
-      return 'Enter a valid email or Nigerian phone number';
+    if (!emailRegex.hasMatch(value)) {
+      return 'Please enter a valid email';
     }
     return null;
   }
 
   String? _validatePassword(String? value) {
-    if (value == null || value.isEmpty) return AppStrings.fieldRequired;
-    if (value.length < 6) return AppStrings.invalidPassword;
+    if (value == null || value.isEmpty) return 'Password is required';
+    if (value.length < 6) return 'Password must be at least 6 characters';
     return null;
   }
 
-  void _handleSignUp() {
-    if (_formKey.currentState?.validate() ?? false) {
-      if (!_agreeToTerms) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Please agree to the terms to continue'),
-            backgroundColor: context.error,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(context.radiusSM),
-            ),
-          ),
-        );
-        return;
-      }
-
-      setState(() => _isLoading = true);
-
-      // Simulate API call
-      Future.delayed(const Duration(seconds: 2), () {
-        setState(() {
-          _isLoading = false;
-          _currentStep = 2;
-        });
-        _startResendTimer();
-      });
+  void _handlePersonalInfoNext() {
+    if (_firstNameController.text.isEmpty) {
+      _showError('Please enter your first name');
+      return;
     }
+    if (_firstNameController.text.length < 2) {
+      _showError('First name must be at least 2 characters');
+      return;
+    }
+    if (_lastNameController.text.isEmpty) {
+      _showError('Please enter your last name');
+      return;
+    }
+    if (_lastNameController.text.length < 2) {
+      _showError('Last name must be at least 2 characters');
+      return;
+    }
+    if (_usernameController.text.isEmpty) {
+      _showError('Please enter a username');
+      return;
+    }
+    if (_usernameController.text.length < 3) {
+      _showError('Username must be at least 3 characters');
+      return;
+    }
+    final usernameRegex = RegExp(r'^[a-zA-Z0-9_]+$');
+    if (!usernameRegex.hasMatch(_usernameController.text)) {
+      _showError('Username can only contain letters, numbers, and underscores');
+      return;
+    }
+
+    setState(() {
+      _currentStep = 2;
+    });
   }
 
-  void _handleVerifyOtp() {
-    final otpCode = _getOtpCode();
+  void _handleEmailPasswordNext() {
+    if (_emailController.text.isEmpty) {
+      _showError('Please enter your email');
+      return;
+    }
+    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+    if (!emailRegex.hasMatch(_emailController.text)) {
+      _showError('Please enter a valid email');
+      return;
+    }
+    if (_passwordController.text.isEmpty) {
+      _showError('Please enter a password');
+      return;
+    }
+    if (_passwordController.text.length < 6) {
+      _showError('Password must be at least 6 characters');
+      return;
+    }
 
-    if (otpCode.length != 6) {
+    setState(() => _isLoading = true);
+
+    // Simulate API call to send OTP
+    Future.delayed(const Duration(seconds: 2), () {
+      setState(() {
+        _isLoading = false;
+        _currentStep = 3;
+      });
+      _startResendTimer();
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(AppStrings.invalidOtp),
-          backgroundColor: context.error,
+          content: Text('OTP sent to ${_emailController.text}'),
+          backgroundColor: context.success,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(context.radiusSM),
           ),
         ),
       );
+    });
+  }
+
+  void _handleVerifyOtp() {
+    final otpCode = _getOtpCode();
+
+    if (otpCode.length != 6) {
+      _showError('Please enter a valid 6-digit OTP');
       return;
     }
 
@@ -154,7 +212,7 @@ class _SignupScreenState extends State<SignupScreen> {
         ),
       );
       // Navigate to home screen
-      GeneralMethods.navigateTo(context,  HomeScreen());
+      GeneralMethods.navigateTo(context, HomeScreen());
     });
   }
 
@@ -175,7 +233,7 @@ class _SignupScreenState extends State<SignupScreen> {
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('New code sent to ${_identifierController.text}'),
+        content: Text('New code sent to ${_emailController.text}'),
         backgroundColor: context.success,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
@@ -183,6 +241,42 @@ class _SignupScreenState extends State<SignupScreen> {
         ),
       ),
     );
+  }
+
+  void _showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: context.error,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(context.radiusSM),
+        ),
+      ),
+    );
+  }
+
+  void _goToPreviousStep() {
+    if (_currentStep > 1) {
+      setState(() {
+        _currentStep--;
+      });
+    } else {
+      Navigator.pop(context);
+    }
+  }
+
+  String _getStepTitle() {
+    switch (_currentStep) {
+      case 1:
+        return 'Personal Information';
+      case 2:
+        return 'Email & Password';
+      case 3:
+        return 'Verification';
+      default:
+        return 'Sign Up';
+    }
   }
 
   @override
@@ -198,333 +292,444 @@ class _SignupScreenState extends State<SignupScreen> {
           elevation: 0,
           leading: IconButton(
             icon: Icon(Icons.arrow_back_ios_new, color: context.deepNavy),
-            onPressed: () {
-              if (_currentStep == 2) {
-                setState(() => _currentStep = 1);
-              } else {
-                Navigator.pop(context);
-              }
-            },
+            onPressed: _goToPreviousStep,
           ),
-          title: _currentStep == 2
-              ? Text(
-            'Step 2 of 2',
-            style: context.bodyMedium?.copyWith(
-              color: context.mediumGray,
-            ),
-          )
-              : null,
+          title: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Step $_currentStep of 3',
+                style: context.bodySmall?.copyWith(
+                  color: context.mediumGray,
+                ),
+              ),
+              Text(
+                _getStepTitle(),
+                style: context.bodyMedium?.copyWith(
+                  color: context.deepNavy,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
         ),
         body: SafeArea(
-          child: _currentStep == 1
-              ? _buildSignupForm()
-              : _buildOtpVerification(),
+          child: _buildCurrentStep(),
         ),
       ),
     );
   }
 
-  Widget _buildSignupForm() {
+  Widget _buildCurrentStep() {
+    switch (_currentStep) {
+      case 1:
+        return _buildPersonalInfoForm();
+      case 2:
+        return _buildEmailPasswordForm();
+      case 3:
+        return _buildOtpVerification();
+      default:
+        return _buildPersonalInfoForm();
+    }
+  }
+
+  Widget _buildPersonalInfoForm() {
     return SingleChildScrollView(
       padding: EdgeInsets.all(context.spacingXL),
       physics: const BouncingScrollPhysics(),
-      child: Form(
-        key: _formKey,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              AppStrings.createAccount,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // App Name
+          Center(
+            child: Text(
+              'Pocket Chat',
               style: context.headlineMedium?.copyWith(
-                color: context.deepNavy,
                 fontWeight: FontWeight.bold,
+                color: context.deepNavy,
+                letterSpacing: 1,
+                fontSize: 32,
               ),
             ),
+          ),
 
-            SizedBox(height: context.spacingXS),
+          SizedBox(height: context.spacing3XL * 2),
 
-            Text(
-              AppStrings.signUpSubtitle,
-              style: context.bodyLarge?.copyWith(
-                color: context.darkGray,
+          // First Name Field
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'First Name:',
+                style: context.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: context.deepNavy,
+                ),
               ),
-            ),
-
-            SizedBox(height: context.spacing3XL),
-
-            // Email/Phone Field
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  AppStrings.emailOrPhone,
-                  style: context.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: context.deepNavy,
+              SizedBox(height: context.spacingSM),
+              TextFormField(
+                controller: _firstNameController,
+                style: context.bodyLarge,
+                autofocus: true,
+                onFieldSubmitted: (_) => _handlePersonalInfoNext(),
+                decoration: InputDecoration(
+                  hintText: 'eg. John',
+                  hintStyle: context.bodyMedium?.copyWith(
+                    color: context.mediumGray,
                   ),
-                ),
-                SizedBox(height: context.spacingSM),
-                TextFormField(
-                  controller: _identifierController,
-                  keyboardType: TextInputType.emailAddress,
-                  validator: _validateIdentifier,
-                  style: context.bodyLarge,
-                  decoration: InputDecoration(
-                    hintText: AppStrings.emailHint,
-                    hintStyle: context.bodyMedium?.copyWith(
-                      color: context.mediumGray,
-                    ),
-                    prefixIcon: Icon(Icons.person_outline, size: 20, color: context.mediumGray),
-                    filled: true,
-                    fillColor: Colors.white,
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 14,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(context.radiusSM),
-                      borderSide: BorderSide(color: context.lightGray, width: 1),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(context.radiusSM),
-                      borderSide: BorderSide(color: context.lightGray, width: 1),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(context.radiusSM),
-                      borderSide: BorderSide(color: context.primaryGreen, width: 2),
-                    ),
-                    errorBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(context.radiusSM),
-                      borderSide: BorderSide(color: context.error, width: 1),
-                    ),
+                  filled: true,
+                  fillColor: Colors.white,
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 14,
                   ),
-                ),
-              ],
-            ),
-
-            SizedBox(height: context.spacingXL),
-
-            // Password Field
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  AppStrings.password,
-                  style: context.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: context.deepNavy,
-                  ),
-                ),
-                SizedBox(height: context.spacingSM),
-                TextFormField(
-                  controller: _passwordController,
-                  obscureText: !_isPasswordVisible,
-                  validator: _validatePassword,
-                  style: context.bodyLarge,
-                  decoration: InputDecoration(
-                    hintText: AppStrings.passwordHint,
-                    hintStyle: context.bodyMedium?.copyWith(
-                      color: context.mediumGray,
-                    ),
-                    prefixIcon: Icon(Icons.lock_outline, size: 20, color: context.mediumGray),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _isPasswordVisible ? Icons.visibility_off : Icons.visibility,
-                        size: 20,
-                        color: context.mediumGray,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _isPasswordVisible = !_isPasswordVisible;
-                        });
-                      },
-                    ),
-                    filled: true,
-                    fillColor: Colors.white,
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 14,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(context.radiusSM),
-                      borderSide: BorderSide(color: context.lightGray, width: 1),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(context.radiusSM),
-                      borderSide: BorderSide(color: context.lightGray, width: 1),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(context.radiusSM),
-                      borderSide: BorderSide(color: context.primaryGreen, width: 2),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-
-            SizedBox(height: context.spacingXL),
-
-            // Confirm Password Field
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Confirm Password',
-                  style: context.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: context.deepNavy,
-                  ),
-                ),
-                SizedBox(height: context.spacingSM),
-                TextFormField(
-                  controller: _confirmPasswordController,
-                  obscureText: !_isConfirmPasswordVisible,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) return AppStrings.fieldRequired;
-                    if (value != _passwordController.text) return AppStrings.passwordsDontMatch;
-                    return null;
-                  },
-                  style: context.bodyLarge,
-                  decoration: InputDecoration(
-                    hintText: 'Confirm your password',
-                    hintStyle: context.bodyMedium?.copyWith(
-                      color: context.mediumGray,
-                    ),
-                    prefixIcon: Icon(Icons.lock_outline, size: 20, color: context.mediumGray),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _isConfirmPasswordVisible ? Icons.visibility_off : Icons.visibility,
-                        size: 20,
-                        color: context.mediumGray,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
-                        });
-                      },
-                    ),
-                    filled: true,
-                    fillColor: Colors.white,
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 14,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(context.radiusSM),
-                      borderSide: BorderSide(color: context.lightGray, width: 1),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(context.radiusSM),
-                      borderSide: BorderSide(color: context.lightGray, width: 1),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(context.radiusSM),
-                      borderSide: BorderSide(color: context.primaryGreen, width: 2),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-
-            SizedBox(height: context.spacingXL),
-
-            // Terms Checkbox
-            Row(
-              children: [
-                SizedBox(
-                  height: 24,
-                  width: 24,
-                  child: Checkbox(
-                    value: _agreeToTerms,
-                    onChanged: (value) {
-                      setState(() {
-                        _agreeToTerms = value ?? false;
-                      });
-                    },
-                    activeColor: context.primaryGreen,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(context.radiusXS),
-                    ),
-                  ),
-                ),
-                SizedBox(width: context.spacingSM),
-                Expanded(
-                  child: Text(
-                    AppStrings.agreeToTerms,
-                    style: context.bodySmall?.copyWith(
-                      color: context.darkGray,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-
-            SizedBox(height: context.spacing3XL),
-
-            // Sign Up Button
-            SizedBox(
-              width: double.infinity,
-              height: 52,
-              child: _isLoading
-                  ? Center(
-                child: CircularProgressIndicator(
-                  color: context.primaryGreen,
-                ),
-              )
-                  : ElevatedButton(
-                onPressed: _handleSignUp,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: context.primaryGreen,
-                  foregroundColor: Colors.white,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
+                  border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(context.radiusSM),
+                    borderSide: BorderSide(color: context.lightGray, width: 1),
                   ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(context.radiusSM),
+                    borderSide: BorderSide(color: context.lightGray, width: 1),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(context.radiusSM),
+                    borderSide: BorderSide(color: context.primaryGreen, width: 2),
+                  ),
+                ),
+              ),
+            ],
+          ),
+
+          SizedBox(height: context.spacingXL),
+
+          // Last Name Field
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Last Name:',
+                style: context.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: context.deepNavy,
+                ),
+              ),
+              SizedBox(height: context.spacingSM),
+              TextFormField(
+                controller: _lastNameController,
+                style: context.bodyLarge,
+                onFieldSubmitted: (_) => _handlePersonalInfoNext(),
+                decoration: InputDecoration(
+                  hintText: 'eg. Doe',
+                  hintStyle: context.bodyMedium?.copyWith(
+                    color: context.mediumGray,
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 14,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(context.radiusSM),
+                    borderSide: BorderSide(color: context.lightGray, width: 1),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(context.radiusSM),
+                    borderSide: BorderSide(color: context.lightGray, width: 1),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(context.radiusSM),
+                    borderSide: BorderSide(color: context.primaryGreen, width: 2),
+                  ),
+                ),
+              ),
+            ],
+          ),
+
+          SizedBox(height: context.spacingXL),
+
+          // Username Field
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Username:',
+                style: context.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: context.deepNavy,
+                ),
+              ),
+              SizedBox(height: context.spacingSM),
+              TextFormField(
+                controller: _usernameController,
+                style: context.bodyLarge,
+                onFieldSubmitted: (_) => _handlePersonalInfoNext(),
+                decoration: InputDecoration(
+                  hintText: 'eg. nick123',
+                  hintStyle: context.bodyMedium?.copyWith(
+                    color: context.mediumGray,
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 14,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(context.radiusSM),
+                    borderSide: BorderSide(color: context.lightGray, width: 1),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(context.radiusSM),
+                    borderSide: BorderSide(color: context.lightGray, width: 1),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(context.radiusSM),
+                    borderSide: BorderSide(color: context.primaryGreen, width: 2),
+                  ),
+                ),
+              ),
+            ],
+          ),
+
+          SizedBox(height: context.spacing3XL * 2),
+
+          // Continue Button
+          SizedBox(
+            width: double.infinity,
+            height: 52,
+            child: ElevatedButton(
+              onPressed: _handlePersonalInfoNext,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: context.primaryGreen,
+                foregroundColor: Colors.white,
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(context.radiusSM),
+                ),
+              ),
+              child: Text(
+                'Continue',
+                style: context.labelLarge?.copyWith(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ),
+
+          SizedBox(height: context.spacingXL),
+
+          // Login Link
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'Already have an account? ',
+                style: context.bodyMedium?.copyWith(
+                  color: context.darkGray,
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                style: TextButton.styleFrom(
+                  minimumSize: Size.zero,
+                  padding: EdgeInsets.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 ),
                 child: Text(
-                  AppStrings.continue_,
-                  style: context.labelLarge?.copyWith(
-                    fontSize: 16,
+                  'Sign In',
+                  style: context.bodyMedium?.copyWith(
+                    color: context.primaryGreen,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
+            ],
+          ),
+          SizedBox(height: context.spacingXL),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmailPasswordForm() {
+    return SingleChildScrollView(
+      padding: EdgeInsets.all(context.spacingXL),
+      physics: const BouncingScrollPhysics(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Summary of previous step
+          Container(
+            padding: EdgeInsets.all(context.spacingMD),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(context.radiusSM),
+              border: Border.all(color: context.lightGray),
             ),
-
-            SizedBox(height: context.spacingXL),
-
-            // Login Link
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  AppStrings.alreadyHaveAccount,
-                  style: context.bodyMedium?.copyWith(
-                    color: context.darkGray,
+                  'Personal Information',
+                  style: context.bodySmall?.copyWith(
+                    color: context.mediumGray,
                   ),
                 ),
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  style: TextButton.styleFrom(
-                    minimumSize: Size.zero,
-                    padding: EdgeInsets.zero,
-                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  ),
-                  child: Text(
-                    AppStrings.login,
-                    style: context.bodyMedium?.copyWith(
-                      color: context.primaryGreen,
-                      fontWeight: FontWeight.w600,
-                    ),
+                SizedBox(height: context.spacingXS),
+                Text(
+                  '${_firstNameController.text} ${_lastNameController.text} (@${_usernameController.text})',
+                  style: context.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: context.deepNavy,
                   ),
                 ),
               ],
             ),
-            SizedBox(height: context.spacingXL),
-          ],
-        ),
+          ),
+
+          SizedBox(height: context.spacing3XL),
+
+          // Email Field
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Email:',
+                style: context.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: context.deepNavy,
+                ),
+              ),
+              SizedBox(height: context.spacingSM),
+              TextFormField(
+                controller: _emailController,
+                keyboardType: TextInputType.emailAddress,
+                style: context.bodyLarge,
+                autofocus: true,
+                onFieldSubmitted: (_) => _handleEmailPasswordNext(),
+                decoration: InputDecoration(
+                  hintText: 'eg. john.doe@example.com',
+                  hintStyle: context.bodyMedium?.copyWith(
+                    color: context.mediumGray,
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 14,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(context.radiusSM),
+                    borderSide: BorderSide(color: context.lightGray, width: 1),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(context.radiusSM),
+                    borderSide: BorderSide(color: context.lightGray, width: 1),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(context.radiusSM),
+                    borderSide: BorderSide(color: context.primaryGreen, width: 2),
+                  ),
+                ),
+              ),
+            ],
+          ),
+
+          SizedBox(height: context.spacingXL),
+
+          // Password Field
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Password:',
+                style: context.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: context.deepNavy,
+                ),
+              ),
+              SizedBox(height: context.spacingSM),
+              TextFormField(
+                controller: _passwordController,
+                obscureText: !_isPasswordVisible,
+                style: context.bodyLarge,
+                onFieldSubmitted: (_) => _handleEmailPasswordNext(),
+                decoration: InputDecoration(
+                  hintText: 'Enter your password',
+                  hintStyle: context.bodyMedium?.copyWith(
+                    color: context.mediumGray,
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _isPasswordVisible ? Icons.visibility_off : Icons.visibility,
+                      size: 20,
+                      color: context.mediumGray,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _isPasswordVisible = !_isPasswordVisible;
+                      });
+                    },
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 14,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(context.radiusSM),
+                    borderSide: BorderSide(color: context.lightGray, width: 1),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(context.radiusSM),
+                    borderSide: BorderSide(color: context.lightGray, width: 1),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(context.radiusSM),
+                    borderSide: BorderSide(color: context.primaryGreen, width: 2),
+                  ),
+                ),
+              ),
+            ],
+          ),
+
+          SizedBox(height: context.spacing3XL * 2),
+
+          // Next Button
+          SizedBox(
+            width: double.infinity,
+            height: 52,
+            child: _isLoading
+                ? Center(
+              child: CircularProgressIndicator(
+                color: context.primaryGreen,
+              ),
+            )
+                : ElevatedButton(
+              onPressed: _handleEmailPasswordNext,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: context.primaryGreen,
+                foregroundColor: Colors.white,
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(context.radiusSM),
+                ),
+              ),
+              child: Text(
+                'Send Verification Code',
+                style: context.labelLarge?.copyWith(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -537,8 +742,8 @@ class _SignupScreenState extends State<SignupScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            AppStrings.verifyYourNumber,
-            style: context.headlineMedium?.copyWith(
+            'Verification Code',
+            style: context.headlineSmall?.copyWith(
               color: context.deepNavy,
               fontWeight: FontWeight.bold,
             ),
@@ -552,9 +757,9 @@ class _SignupScreenState extends State<SignupScreen> {
                 color: context.darkGray,
               ),
               children: [
-                const TextSpan(text: '${AppStrings.otpSent} '),
+                const TextSpan(text: 'We sent a 6-digit code to '),
                 TextSpan(
-                  text: _identifierController.text,
+                  text: _emailController.text,
                   style: const TextStyle(
                     fontWeight: FontWeight.w600,
                   ),
@@ -565,43 +770,52 @@ class _SignupScreenState extends State<SignupScreen> {
 
           SizedBox(height: context.spacing4XL),
 
-          // OTP Input Fields
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: List.generate(6, (index) {
-              return Container(
-                width: 50,
-                height: 56,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(context.radiusSM),
-                  border: Border.all(
-                    color: context.lightGray,
-                    width: 1,
-                  ),
-                  boxShadow: context.shadowSM,
-                ),
-                child: TextField(
-                  controller: _otpControllers[index],
-                  focusNode: _otpFocusNodes[index],
-                  keyboardType: TextInputType.number,
-                  textAlign: TextAlign.center,
-                  style: context.titleLarge?.copyWith(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                  ),
-                  inputFormatters: [
-                    LengthLimitingTextInputFormatter(1),
-                    FilteringTextInputFormatter.digitsOnly,
-                  ],
-                  decoration: const InputDecoration(
-                    border: InputBorder.none,
-                    counterText: '',
-                  ),
-                  onChanged: (value) => _onOtpChanged(index, value),
-                ),
-              );
-            }),
+          // OTP Input Fields - Fixed with LayoutBuilder
+          LayoutBuilder(
+              builder: (context, constraints) {
+                double boxSize = (constraints.maxWidth - (context.spacingSM * 5)) / 6;
+                // Ensure minimum size of 45 and maximum of 55
+                boxSize = boxSize.clamp(45.0, 55.0);
+
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: List.generate(6, (index) {
+                    return Container(
+                      width: boxSize,
+                      height: boxSize + 8, // Slightly taller than wide
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(context.radiusSM),
+                        border: Border.all(
+                          color: context.lightGray,
+                          width: 1,
+                        ),
+                        boxShadow: context.shadowSM,
+                      ),
+                      child: TextField(
+                        controller: _otpControllers[index],
+                        focusNode: _otpFocusNodes[index],
+                        keyboardType: TextInputType.number,
+                        textAlign: TextAlign.center,
+                        style: context.titleLarge?.copyWith(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        inputFormatters: [
+                          LengthLimitingTextInputFormatter(1),
+                          FilteringTextInputFormatter.digitsOnly,
+                        ],
+                        decoration: const InputDecoration(
+                          border: InputBorder.none,
+                          counterText: '',
+                          contentPadding: EdgeInsets.zero,
+                        ),
+                        onChanged: (value) => _onOtpChanged(index, value),
+                      ),
+                    );
+                  }),
+                );
+              }
           ),
 
           SizedBox(height: context.spacing3XL),
@@ -611,7 +825,7 @@ class _SignupScreenState extends State<SignupScreen> {
             child: Column(
               children: [
                 Text(
-                  AppStrings.didntReceiveCode,
+                  "Didn't receive the code?",
                   style: context.bodyMedium?.copyWith(
                     color: context.darkGray,
                   ),
@@ -619,7 +833,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 SizedBox(height: context.spacingXS),
                 if (!_isResendEnabled)
                   Text(
-                    '${AppStrings.resendIn}00:${_resendTimer.toString().padLeft(2, '0')}',
+                    'Resend in 00:${_resendTimer.toString().padLeft(2, '0')}',
                     style: context.bodyMedium?.copyWith(
                       color: context.mediumGray,
                       fontWeight: FontWeight.w600,
@@ -634,7 +848,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     ),
                     child: Text(
-                      AppStrings.resendCode,
+                      'Resend Code',
                       style: context.bodyMedium?.copyWith(
                         color: context.primaryGreen,
                         fontWeight: FontWeight.w600,
@@ -647,7 +861,7 @@ class _SignupScreenState extends State<SignupScreen> {
 
           SizedBox(height: context.spacing4XL),
 
-          // Verify Button
+          // Submit Button
           SizedBox(
             width: double.infinity,
             height: 52,
@@ -668,7 +882,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 ),
               ),
               child: Text(
-                AppStrings.verify,
+                'Submit',
                 style: context.labelLarge?.copyWith(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
@@ -676,24 +890,6 @@ class _SignupScreenState extends State<SignupScreen> {
               ),
             ),
           ),
-
-          SizedBox(height: context.spacingMD),
-
-          // Go Back Button
-          Center(
-            child: TextButton(
-              onPressed: () {
-                setState(() => _currentStep = 1);
-              },
-              child: Text(
-                'Go Back',
-                style: context.bodyMedium?.copyWith(
-                  color: context.mediumGray,
-                ),
-              ),
-            ),
-          ),
-          SizedBox(height: context.spacingXL),
         ],
       ),
     );
