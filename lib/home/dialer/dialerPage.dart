@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pavi/theme/generalTheme.dart';
 import '../../model/messageModel.dart';
-import 'call_screen.dart';
+import 'call_screen.dart' hide CallType;
+
+import 'package:flutter/material.dart';
 
 class DialerScreen extends StatefulWidget {
   const DialerScreen({super.key});
@@ -17,7 +19,6 @@ class _DialerScreenState extends State<DialerScreen> with SingleTickerProviderSt
   final TextEditingController _numberController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
   late TabController _tabController;
-  // Add these variables to your state class
   Timer? _deleteTimer;
   bool _isLongPressing = false;
 
@@ -42,6 +43,16 @@ class _DialerScreenState extends State<DialerScreen> with SingleTickerProviderSt
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
     _searchResults = _contacts;
+
+    _tabController.addListener(() {
+      if (_tabController.indexIsChanging) {
+        setState(() {
+          _selectedCallType = _tabController.index == 0
+              ? CallType.appToApp
+              : CallType.appToPhone;
+        });
+      }
+    });
   }
 
   @override
@@ -49,6 +60,7 @@ class _DialerScreenState extends State<DialerScreen> with SingleTickerProviderSt
     _numberController.dispose();
     _searchFocusNode.dispose();
     _tabController.dispose();
+    _deleteTimer?.cancel();
     super.dispose();
   }
 
@@ -126,22 +138,26 @@ class _DialerScreenState extends State<DialerScreen> with SingleTickerProviderSt
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: context.offWhite,
+      backgroundColor: context.backgroundColor,
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        backgroundColor: Colors.white,
+        backgroundColor: context.surfaceColor,
         elevation: 0,
         title: _isSearching
             ? TextField(
           controller: _numberController,
           focusNode: _searchFocusNode,
           autofocus: true,
-          style: context.bodyLarge,
+          style: context.bodyLarge?.copyWith(
+            color: context.textPrimary,
+          ),
           decoration: InputDecoration(
             hintText: 'Search contacts or enter number',
             hintStyle: context.bodyMedium?.copyWith(
-              color: context.mediumGray,
+              color: context.textHint,
             ),
             border: InputBorder.none,
           ),
@@ -151,13 +167,14 @@ class _DialerScreenState extends State<DialerScreen> with SingleTickerProviderSt
           'Dialer',
           style: context.titleLarge?.copyWith(
             fontWeight: FontWeight.w600,
+            color: context.textPrimary,
           ),
         ),
         actions: [
           IconButton(
             icon: Icon(
               _isSearching ? Icons.close : Icons.search,
-              color: context.deepNavy,
+              color: context.textPrimary,
             ),
             onPressed: () {
               setState(() {
@@ -180,6 +197,8 @@ class _DialerScreenState extends State<DialerScreen> with SingleTickerProviderSt
   }
 
   Widget _buildSearchView() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Column(
       children: [
         Expanded(
@@ -198,7 +217,7 @@ class _DialerScreenState extends State<DialerScreen> with SingleTickerProviderSt
                   ),
                   child: Center(
                     child: Text(
-                      contact.name[0],
+                      contact.name[0].toUpperCase(),
                       style: const TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.w600,
@@ -210,12 +229,13 @@ class _DialerScreenState extends State<DialerScreen> with SingleTickerProviderSt
                   contact.name,
                   style: context.bodyMedium?.copyWith(
                     fontWeight: FontWeight.w600,
+                    color: context.textPrimary,
                   ),
                 ),
                 subtitle: Text(
                   contact.number,
                   style: context.bodySmall?.copyWith(
-                    color: context.mediumGray,
+                    color: context.textSecondary,
                   ),
                 ),
                 trailing: Container(
@@ -224,13 +244,13 @@ class _DialerScreenState extends State<DialerScreen> with SingleTickerProviderSt
                     vertical: context.spacingXXS,
                   ),
                   decoration: BoxDecoration(
-                    color: context.primaryGreen.withOpacity(0.1),
+                    color: (isDark ? context.accentPurple : context.primaryColor).withOpacity(0.1),
                     borderRadius: BorderRadius.circular(context.radiusSM),
                   ),
                   child: Text(
                     contact.type,
                     style: context.labelSmall?.copyWith(
-                      color: context.primaryGreen,
+                      color: isDark ? context.accentPurple : context.primaryColor,
                     ),
                   ),
                 ),
@@ -250,6 +270,8 @@ class _DialerScreenState extends State<DialerScreen> with SingleTickerProviderSt
   }
 
   Widget _buildDialerView() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Column(
       children: [
         // Number Display - Single line with horizontal scrolling
@@ -263,7 +285,7 @@ class _DialerScreenState extends State<DialerScreen> with SingleTickerProviderSt
               Text(
                 'Enter Number',
                 style: context.bodySmall?.copyWith(
-                  color: context.mediumGray,
+                  color: context.textSecondary,
                 ),
               ),
               SizedBox(height: context.spacingXS),
@@ -284,7 +306,7 @@ class _DialerScreenState extends State<DialerScreen> with SingleTickerProviderSt
                           style: context.displaySmall?.copyWith(
                             fontSize: 32,
                             letterSpacing: 2,
-                            color: context.deepNavy,
+                            color: context.textHint,
                           ),
                         ),
                       ),
@@ -297,7 +319,7 @@ class _DialerScreenState extends State<DialerScreen> with SingleTickerProviderSt
                           style: context.displaySmall?.copyWith(
                             fontSize: 32,
                             letterSpacing: 2,
-                            color: context.deepNavy,
+                            color: context.textPrimary,
                           ),
                         ),
                       );
@@ -313,18 +335,18 @@ class _DialerScreenState extends State<DialerScreen> with SingleTickerProviderSt
         Container(
           margin: EdgeInsets.symmetric(horizontal: context.spacingLG),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: isDark ? context.darkCard : context.white,
             borderRadius: BorderRadius.circular(context.radiusLG),
-            boxShadow: context.shadowSM,
+            boxShadow: isDark ? null : context.shadowSM,
           ),
           child: TabBar(
             controller: _tabController,
             indicator: BoxDecoration(
               borderRadius: BorderRadius.circular(context.radiusLG),
-              color: context.primaryGreen.withOpacity(0.1),
+              color: (isDark ? context.accentPurple : context.primaryColor).withOpacity(0.1),
             ),
-            labelColor: context.primaryGreen,
-            unselectedLabelColor: context.mediumGray,
+            labelColor: isDark ? context.accentPurple : context.primaryColor,
+            unselectedLabelColor: context.textHint,
             tabs: const [
               Tab(
                 child: Row(
@@ -362,8 +384,8 @@ class _DialerScreenState extends State<DialerScreen> with SingleTickerProviderSt
                     : Icons.radio_button_unchecked,
                 size: 14,
                 color: _selectedCallType == CallType.appToApp
-                    ? context.primaryGreen
-                    : context.mediumGray,
+                    ? (isDark ? context.accentPurple : context.primaryColor)
+                    : context.textHint,
               ),
               SizedBox(width: context.spacingXS),
               Expanded(
@@ -372,8 +394,8 @@ class _DialerScreenState extends State<DialerScreen> with SingleTickerProviderSt
                   style: context.bodySmall?.copyWith(
                     fontSize: 12,
                     color: _selectedCallType == CallType.appToApp
-                        ? context.primaryGreen
-                        : context.mediumGray,
+                        ? (isDark ? context.accentPurple : context.primaryColor)
+                        : context.textHint,
                   ),
                 ),
               ),
@@ -397,7 +419,7 @@ class _DialerScreenState extends State<DialerScreen> with SingleTickerProviderSt
                 Icon(
                   Icons.info_outline,
                   size: 14,
-                  color: context.actionAmber,
+                  color: context.warning,
                 ),
                 SizedBox(width: context.spacingXS),
                 Expanded(
@@ -405,7 +427,7 @@ class _DialerScreenState extends State<DialerScreen> with SingleTickerProviderSt
                     'Rate: ₦25/min',
                     style: context.bodySmall?.copyWith(
                       fontSize: 12,
-                      color: context.actionAmber,
+                      color: context.warning,
                     ),
                   ),
                 ),
@@ -424,9 +446,9 @@ class _DialerScreenState extends State<DialerScreen> with SingleTickerProviderSt
               context.spacingLG,
             ),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: isDark ? context.darkCard : context.white,
               borderRadius: BorderRadius.circular(context.radiusXL),
-              boxShadow: context.shadowMD,
+              boxShadow: isDark ? null : context.shadowMD,
             ),
             child: Column(
               children: [
@@ -475,7 +497,8 @@ class _DialerScreenState extends State<DialerScreen> with SingleTickerProviderSt
                         icon: _selectedCallType == CallType.appToApp
                             ? Icons.wifi : Icons.phone,
                         color: _selectedCallType == CallType.appToApp
-                            ? context.primaryGreen : context.actionAmber,
+                            ? (isDark ? context.accentPurple : context.primaryColor)
+                            : context.warning,
                         onTap: () {
                           setState(() {
                             _selectedCallType = _selectedCallType == CallType.appToApp
@@ -490,7 +513,7 @@ class _DialerScreenState extends State<DialerScreen> with SingleTickerProviderSt
                       _buildCallButton(),
                       _buildBottomActionButton(
                         icon: Icons.backspace_outlined,
-                        color: context.darkGray,
+                        color: context.textSecondary,
                         onTap: _onDeletePressed,
                       ),
                     ],
@@ -531,6 +554,8 @@ class _DialerScreenState extends State<DialerScreen> with SingleTickerProviderSt
   }
 
   Widget _buildCallButton() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return GestureDetector(
       onTap: _startCall,
       child: Container(
@@ -538,23 +563,28 @@ class _DialerScreenState extends State<DialerScreen> with SingleTickerProviderSt
         height: 60,
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [
-              context.primaryGreen,
-              context.primaryGreenDark,
+            colors: isDark
+                ? [
+              context.accentPurple,
+              context.accentPurpleDark,
+            ]
+                : [
+              context.primaryColor,
+              context.primaryPurpleDark,
             ],
           ),
           shape: BoxShape.circle,
           boxShadow: [
             BoxShadow(
-              color: context.primaryGreen.withOpacity(0.3),
+              color: (isDark ? context.accentPurple : context.primaryColor).withOpacity(0.3),
               blurRadius: 8,
               spreadRadius: 2,
             ),
           ],
         ),
-        child: const Icon(
+        child: Icon(
           Icons.phone,
-          color: Colors.white,
+          color: context.white,
           size: 26,
         ),
       ),
@@ -562,6 +592,8 @@ class _DialerScreenState extends State<DialerScreen> with SingleTickerProviderSt
   }
 
   Widget _buildKeyButton(String main, String sub) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -581,14 +613,14 @@ class _DialerScreenState extends State<DialerScreen> with SingleTickerProviderSt
                   style: context.titleLarge?.copyWith(
                     fontSize: 20, // Smaller font to ensure fit
                     fontWeight: FontWeight.w500,
-                    color: context.deepNavy,
+                    color: context.textPrimary,
                   ),
                 ),
                 if (sub.isNotEmpty)
                   Text(
                     sub,
                     style: context.labelSmall?.copyWith(
-                      color: context.mediumGray,
+                      color: context.textHint,
                       fontSize: 8, // Smaller font
                     ),
                   ),
@@ -600,7 +632,6 @@ class _DialerScreenState extends State<DialerScreen> with SingleTickerProviderSt
     );
   }
 }
-
 class Contact {
   final String name;
   final String number;

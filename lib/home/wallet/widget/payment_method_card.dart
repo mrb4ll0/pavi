@@ -18,19 +18,23 @@ class PaymentMethodCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
         margin: EdgeInsets.only(bottom: context.spacingSM),
         padding: EdgeInsets.all(context.spacingMD),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: isDark ? context.darkCard : context.white,
           borderRadius: BorderRadius.circular(context.radiusMD),
           border: Border.all(
-            color: isSelected ? context.primaryGreen : context.lightGray,
+            color: isSelected
+                ? (isDark ? context.accentPurple : context.primaryColor)
+                : (isDark ? context.darkTextHint.withOpacity(0.3) : context.lightGray),
             width: isSelected ? 2 : 1,
           ),
-          boxShadow: isSelected ? context.shadowSM : null,
+          boxShadow: isSelected && !isDark ? context.shadowSM : null,
         ),
         child: Row(
           children: [
@@ -62,6 +66,7 @@ class PaymentMethodCard extends StatelessWidget {
                         method.displayName,
                         style: context.bodyMedium?.copyWith(
                           fontWeight: FontWeight.w600,
+                          color: context.textPrimary,
                         ),
                       ),
                       if (option?.processingFee != null && option!.processingFee! > 0) ...[
@@ -72,13 +77,13 @@ class PaymentMethodCard extends StatelessWidget {
                             vertical: 2,
                           ),
                           decoration: BoxDecoration(
-                            color: context.actionAmber.withOpacity(0.1),
+                            color: context.warning.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(context.radiusXS),
                           ),
                           child: Text(
                             option!.feeText,
                             style: context.labelSmall?.copyWith(
-                              color: context.actionAmber,
+                              color: context.warning,
                               fontSize: 9,
                               fontWeight: FontWeight.w600,
                             ),
@@ -93,7 +98,7 @@ class PaymentMethodCard extends StatelessWidget {
                   Text(
                     method.description,
                     style: context.bodySmall?.copyWith(
-                      color: context.mediumGray,
+                      color: context.textHint,
                     ),
                   ),
 
@@ -104,13 +109,13 @@ class PaymentMethodCard extends StatelessWidget {
                         Icon(
                           Icons.timer_outlined,
                           size: 12,
-                          color: context.mediumGray,
+                          color: context.textHint,
                         ),
                         SizedBox(width: context.spacingXXS),
                         Text(
                           option!.processingTimeText,
                           style: context.labelSmall?.copyWith(
-                            color: context.mediumGray,
+                            color: context.textHint,
                             fontSize: 9,
                           ),
                         ),
@@ -126,7 +131,7 @@ class PaymentMethodCard extends StatelessWidget {
               value: true,
               groupValue: isSelected,
               onChanged: (value) => onTap(),
-              activeColor: context.primaryGreen,
+              activeColor: isDark ? context.accentPurple : context.primaryColor,
             ),
           ],
         ),

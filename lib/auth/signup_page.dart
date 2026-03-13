@@ -5,6 +5,9 @@ import '../core/general/generalMethods.dart';
 import '../home/homeScreen/home_screen.dart';
 import '../theme/generalTheme.dart';
 
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
 
@@ -77,38 +80,6 @@ class _SignupScreenState extends State<SignupScreen> {
 
   String _getOtpCode() {
     return _otpControllers.map((c) => c.text).join();
-  }
-
-  String? _validateName(String? value, String fieldName) {
-    if (value == null || value.isEmpty) return '$fieldName is required';
-    if (value.length < 2) return '$fieldName must be at least 2 characters';
-    return null;
-  }
-
-  String? _validateUsername(String? value) {
-    if (value == null || value.isEmpty) return 'Username is required';
-    if (value.length < 3) return 'Username must be at least 3 characters';
-    // Allow letters, numbers, and underscores
-    final usernameRegex = RegExp(r'^[a-zA-Z0-9_]+$');
-    if (!usernameRegex.hasMatch(value)) {
-      return 'Username can only contain letters, numbers, and underscores';
-    }
-    return null;
-  }
-
-  String? _validateEmail(String? value) {
-    if (value == null || value.isEmpty) return 'Email is required';
-    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-    if (!emailRegex.hasMatch(value)) {
-      return 'Please enter a valid email';
-    }
-    return null;
-  }
-
-  String? _validatePassword(String? value) {
-    if (value == null || value.isEmpty) return 'Password is required';
-    if (value.length < 6) return 'Password must be at least 6 characters';
-    return null;
   }
 
   void _handlePersonalInfoNext() {
@@ -212,7 +183,7 @@ class _SignupScreenState extends State<SignupScreen> {
         ),
       );
       // Navigate to home screen
-      GeneralMethods.navigateTo(context, HomeScreen());
+      // GeneralMethods.navigateTo(context, HomeScreen());
     });
   }
 
@@ -281,17 +252,28 @@ class _SignupScreenState extends State<SignupScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: SystemUiOverlayStyle.dark.copyWith(
+      value: isDark
+          ? const SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.light,
+      )
+          : const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.dark,
       ),
       child: Scaffold(
-        backgroundColor: context.offWhite,
+        backgroundColor: context.backgroundColor,
         appBar: AppBar(
-          backgroundColor: Colors.transparent,
+          backgroundColor: context.surfaceColor,
           elevation: 0,
           leading: IconButton(
-            icon: Icon(Icons.arrow_back_ios_new, color: context.deepNavy),
+            icon: Icon(
+              Icons.arrow_back_ios_new,
+              color: context.textPrimary,
+            ),
             onPressed: _goToPreviousStep,
           ),
           title: Column(
@@ -300,13 +282,13 @@ class _SignupScreenState extends State<SignupScreen> {
               Text(
                 'Step $_currentStep of 3',
                 style: context.bodySmall?.copyWith(
-                  color: context.mediumGray,
+                  color: context.textSecondary,
                 ),
               ),
               Text(
                 _getStepTitle(),
                 style: context.bodyMedium?.copyWith(
-                  color: context.deepNavy,
+                  color: context.textPrimary,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -334,6 +316,8 @@ class _SignupScreenState extends State<SignupScreen> {
   }
 
   Widget _buildPersonalInfoForm() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return SingleChildScrollView(
       padding: EdgeInsets.all(context.spacingXL),
       physics: const BouncingScrollPhysics(),
@@ -346,7 +330,7 @@ class _SignupScreenState extends State<SignupScreen> {
               'Pocket Chat',
               style: context.headlineMedium?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: context.deepNavy,
+                color: isDark ? context.darkTextPrimary : context.primaryColor,
                 letterSpacing: 1,
                 fontSize: 32,
               ),
@@ -363,38 +347,17 @@ class _SignupScreenState extends State<SignupScreen> {
                 'First Name:',
                 style: context.bodyMedium?.copyWith(
                   fontWeight: FontWeight.w600,
-                  color: context.deepNavy,
+                  color: context.textPrimary,
                 ),
               ),
               SizedBox(height: context.spacingSM),
               TextFormField(
                 controller: _firstNameController,
-                style: context.bodyLarge,
+                style: context.bodyText,
                 autofocus: true,
                 onFieldSubmitted: (_) => _handlePersonalInfoNext(),
-                decoration: InputDecoration(
+                decoration: context.inputDecoration(
                   hintText: 'eg. John',
-                  hintStyle: context.bodyMedium?.copyWith(
-                    color: context.mediumGray,
-                  ),
-                  filled: true,
-                  fillColor: Colors.white,
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 14,
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(context.radiusSM),
-                    borderSide: BorderSide(color: context.lightGray, width: 1),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(context.radiusSM),
-                    borderSide: BorderSide(color: context.lightGray, width: 1),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(context.radiusSM),
-                    borderSide: BorderSide(color: context.primaryGreen, width: 2),
-                  ),
                 ),
               ),
             ],
@@ -410,37 +373,16 @@ class _SignupScreenState extends State<SignupScreen> {
                 'Last Name:',
                 style: context.bodyMedium?.copyWith(
                   fontWeight: FontWeight.w600,
-                  color: context.deepNavy,
+                  color: context.textPrimary,
                 ),
               ),
               SizedBox(height: context.spacingSM),
               TextFormField(
                 controller: _lastNameController,
-                style: context.bodyLarge,
+                style: context.bodyText,
                 onFieldSubmitted: (_) => _handlePersonalInfoNext(),
-                decoration: InputDecoration(
+                decoration: context.inputDecoration(
                   hintText: 'eg. Doe',
-                  hintStyle: context.bodyMedium?.copyWith(
-                    color: context.mediumGray,
-                  ),
-                  filled: true,
-                  fillColor: Colors.white,
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 14,
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(context.radiusSM),
-                    borderSide: BorderSide(color: context.lightGray, width: 1),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(context.radiusSM),
-                    borderSide: BorderSide(color: context.lightGray, width: 1),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(context.radiusSM),
-                    borderSide: BorderSide(color: context.primaryGreen, width: 2),
-                  ),
                 ),
               ),
             ],
@@ -456,37 +398,16 @@ class _SignupScreenState extends State<SignupScreen> {
                 'Username:',
                 style: context.bodyMedium?.copyWith(
                   fontWeight: FontWeight.w600,
-                  color: context.deepNavy,
+                  color: context.textPrimary,
                 ),
               ),
               SizedBox(height: context.spacingSM),
               TextFormField(
                 controller: _usernameController,
-                style: context.bodyLarge,
+                style: context.bodyText,
                 onFieldSubmitted: (_) => _handlePersonalInfoNext(),
-                decoration: InputDecoration(
+                decoration: context.inputDecoration(
                   hintText: 'eg. nick123',
-                  hintStyle: context.bodyMedium?.copyWith(
-                    color: context.mediumGray,
-                  ),
-                  filled: true,
-                  fillColor: Colors.white,
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 14,
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(context.radiusSM),
-                    borderSide: BorderSide(color: context.lightGray, width: 1),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(context.radiusSM),
-                    borderSide: BorderSide(color: context.lightGray, width: 1),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(context.radiusSM),
-                    borderSide: BorderSide(color: context.primaryGreen, width: 2),
-                  ),
                 ),
               ),
             ],
@@ -500,14 +421,7 @@ class _SignupScreenState extends State<SignupScreen> {
             height: 52,
             child: ElevatedButton(
               onPressed: _handlePersonalInfoNext,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: context.primaryGreen,
-                foregroundColor: Colors.white,
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(context.radiusSM),
-                ),
-              ),
+              style: context.primaryButton,
               child: Text(
                 'Continue',
                 style: context.labelLarge?.copyWith(
@@ -527,7 +441,7 @@ class _SignupScreenState extends State<SignupScreen> {
               Text(
                 'Already have an account? ',
                 style: context.bodyMedium?.copyWith(
-                  color: context.darkGray,
+                  color: context.textSecondary,
                 ),
               ),
               TextButton(
@@ -538,11 +452,12 @@ class _SignupScreenState extends State<SignupScreen> {
                   minimumSize: Size.zero,
                   padding: EdgeInsets.zero,
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  foregroundColor: isDark ? context.accentPurple : context.primaryColor,
                 ),
                 child: Text(
                   'Sign In',
                   style: context.bodyMedium?.copyWith(
-                    color: context.primaryGreen,
+                    color: isDark ? context.accentPurple : context.primaryColor,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -556,6 +471,8 @@ class _SignupScreenState extends State<SignupScreen> {
   }
 
   Widget _buildEmailPasswordForm() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return SingleChildScrollView(
       padding: EdgeInsets.all(context.spacingXL),
       physics: const BouncingScrollPhysics(),
@@ -566,9 +483,11 @@ class _SignupScreenState extends State<SignupScreen> {
           Container(
             padding: EdgeInsets.all(context.spacingMD),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: isDark ? context.darkCard : context.white,
               borderRadius: BorderRadius.circular(context.radiusSM),
-              border: Border.all(color: context.lightGray),
+              border: Border.all(
+                color: isDark ? context.darkTextHint.withOpacity(0.3) : context.lightGray,
+              ),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -576,7 +495,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 Text(
                   'Personal Information',
                   style: context.bodySmall?.copyWith(
-                    color: context.mediumGray,
+                    color: context.textSecondary,
                   ),
                 ),
                 SizedBox(height: context.spacingXS),
@@ -584,7 +503,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   '${_firstNameController.text} ${_lastNameController.text} (@${_usernameController.text})',
                   style: context.bodyMedium?.copyWith(
                     fontWeight: FontWeight.w600,
-                    color: context.deepNavy,
+                    color: context.textPrimary,
                   ),
                 ),
               ],
@@ -601,39 +520,18 @@ class _SignupScreenState extends State<SignupScreen> {
                 'Email:',
                 style: context.bodyMedium?.copyWith(
                   fontWeight: FontWeight.w600,
-                  color: context.deepNavy,
+                  color: context.textPrimary,
                 ),
               ),
               SizedBox(height: context.spacingSM),
               TextFormField(
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
-                style: context.bodyLarge,
+                style: context.bodyText,
                 autofocus: true,
                 onFieldSubmitted: (_) => _handleEmailPasswordNext(),
-                decoration: InputDecoration(
+                decoration: context.inputDecoration(
                   hintText: 'eg. john.doe@example.com',
-                  hintStyle: context.bodyMedium?.copyWith(
-                    color: context.mediumGray,
-                  ),
-                  filled: true,
-                  fillColor: Colors.white,
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 14,
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(context.radiusSM),
-                    borderSide: BorderSide(color: context.lightGray, width: 1),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(context.radiusSM),
-                    borderSide: BorderSide(color: context.lightGray, width: 1),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(context.radiusSM),
-                    borderSide: BorderSide(color: context.primaryGreen, width: 2),
-                  ),
                 ),
               ),
             ],
@@ -649,49 +547,28 @@ class _SignupScreenState extends State<SignupScreen> {
                 'Password:',
                 style: context.bodyMedium?.copyWith(
                   fontWeight: FontWeight.w600,
-                  color: context.deepNavy,
+                  color: context.textPrimary,
                 ),
               ),
               SizedBox(height: context.spacingSM),
               TextFormField(
                 controller: _passwordController,
                 obscureText: !_isPasswordVisible,
-                style: context.bodyLarge,
+                style: context.bodyText,
                 onFieldSubmitted: (_) => _handleEmailPasswordNext(),
-                decoration: InputDecoration(
+                decoration: context.inputDecoration(
                   hintText: 'Enter your password',
-                  hintStyle: context.bodyMedium?.copyWith(
-                    color: context.mediumGray,
-                  ),
-                  filled: true,
-                  fillColor: Colors.white,
                   suffixIcon: IconButton(
                     icon: Icon(
                       _isPasswordVisible ? Icons.visibility_off : Icons.visibility,
                       size: 20,
-                      color: context.mediumGray,
+                      color: context.textHint,
                     ),
                     onPressed: () {
                       setState(() {
                         _isPasswordVisible = !_isPasswordVisible;
                       });
                     },
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 14,
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(context.radiusSM),
-                    borderSide: BorderSide(color: context.lightGray, width: 1),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(context.radiusSM),
-                    borderSide: BorderSide(color: context.lightGray, width: 1),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(context.radiusSM),
-                    borderSide: BorderSide(color: context.primaryGreen, width: 2),
                   ),
                 ),
               ),
@@ -707,19 +584,12 @@ class _SignupScreenState extends State<SignupScreen> {
             child: _isLoading
                 ? Center(
               child: CircularProgressIndicator(
-                color: context.primaryGreen,
+                color: isDark ? context.accentPurple : context.primaryColor,
               ),
             )
                 : ElevatedButton(
               onPressed: _handleEmailPasswordNext,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: context.primaryGreen,
-                foregroundColor: Colors.white,
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(context.radiusSM),
-                ),
-              ),
+              style: context.primaryButton,
               child: Text(
                 'Send Verification Code',
                 style: context.labelLarge?.copyWith(
@@ -735,6 +605,8 @@ class _SignupScreenState extends State<SignupScreen> {
   }
 
   Widget _buildOtpVerification() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return SingleChildScrollView(
       padding: EdgeInsets.all(context.spacingXL),
       physics: const BouncingScrollPhysics(),
@@ -744,7 +616,7 @@ class _SignupScreenState extends State<SignupScreen> {
           Text(
             'Verification Code',
             style: context.headlineSmall?.copyWith(
-              color: context.deepNavy,
+              color: context.textPrimary,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -754,14 +626,15 @@ class _SignupScreenState extends State<SignupScreen> {
           RichText(
             text: TextSpan(
               style: context.bodyLarge?.copyWith(
-                color: context.darkGray,
+                color: context.textSecondary,
               ),
               children: [
                 const TextSpan(text: 'We sent a 6-digit code to '),
                 TextSpan(
                   text: _emailController.text,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontWeight: FontWeight.w600,
+                    color: context.textPrimary,
                   ),
                 ),
               ],
@@ -770,11 +643,10 @@ class _SignupScreenState extends State<SignupScreen> {
 
           SizedBox(height: context.spacing4XL),
 
-          // OTP Input Fields - Fixed with LayoutBuilder
+          // OTP Input Fields
           LayoutBuilder(
               builder: (context, constraints) {
                 double boxSize = (constraints.maxWidth - (context.spacingSM * 5)) / 6;
-                // Ensure minimum size of 45 and maximum of 55
                 boxSize = boxSize.clamp(45.0, 55.0);
 
                 return Row(
@@ -782,15 +654,15 @@ class _SignupScreenState extends State<SignupScreen> {
                   children: List.generate(6, (index) {
                     return Container(
                       width: boxSize,
-                      height: boxSize + 8, // Slightly taller than wide
+                      height: boxSize + 8,
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: isDark ? context.darkCard : context.white,
                         borderRadius: BorderRadius.circular(context.radiusSM),
                         border: Border.all(
-                          color: context.lightGray,
+                          color: isDark ? context.darkTextHint.withOpacity(0.3) : context.lightGray,
                           width: 1,
                         ),
-                        boxShadow: context.shadowSM,
+                        boxShadow: isDark ? null : context.shadowSM,
                       ),
                       child: TextField(
                         controller: _otpControllers[index],
@@ -800,6 +672,7 @@ class _SignupScreenState extends State<SignupScreen> {
                         style: context.titleLarge?.copyWith(
                           fontSize: 20,
                           fontWeight: FontWeight.w600,
+                          color: context.textPrimary,
                         ),
                         inputFormatters: [
                           LengthLimitingTextInputFormatter(1),
@@ -827,7 +700,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 Text(
                   "Didn't receive the code?",
                   style: context.bodyMedium?.copyWith(
-                    color: context.darkGray,
+                    color: context.textSecondary,
                   ),
                 ),
                 SizedBox(height: context.spacingXS),
@@ -835,7 +708,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   Text(
                     'Resend in 00:${_resendTimer.toString().padLeft(2, '0')}',
                     style: context.bodyMedium?.copyWith(
-                      color: context.mediumGray,
+                      color: context.textHint,
                       fontWeight: FontWeight.w600,
                     ),
                   )
@@ -846,11 +719,12 @@ class _SignupScreenState extends State<SignupScreen> {
                       minimumSize: Size.zero,
                       padding: EdgeInsets.zero,
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      foregroundColor: isDark ? context.accentPurple : context.primaryColor,
                     ),
                     child: Text(
                       'Resend Code',
                       style: context.bodyMedium?.copyWith(
-                        color: context.primaryGreen,
+                        color: isDark ? context.accentPurple : context.primaryColor,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -868,19 +742,12 @@ class _SignupScreenState extends State<SignupScreen> {
             child: _isLoading
                 ? Center(
               child: CircularProgressIndicator(
-                color: context.primaryGreen,
+                color: isDark ? context.accentPurple : context.primaryColor,
               ),
             )
                 : ElevatedButton(
               onPressed: _handleVerifyOtp,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: context.primaryGreen,
-                foregroundColor: Colors.white,
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(context.radiusSM),
-                ),
-              ),
+              style: context.primaryButton,
               child: Text(
                 'Submit',
                 style: context.labelLarge?.copyWith(

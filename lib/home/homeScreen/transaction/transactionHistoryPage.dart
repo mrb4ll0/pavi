@@ -171,23 +171,26 @@ class TransactionHistoryPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return DefaultTabController(
       length: 3,
       child: Scaffold(
-        backgroundColor: context.offWhite,
+        backgroundColor: context.backgroundColor,
         appBar: AppBar(
-          backgroundColor: Colors.white,
+          backgroundColor: context.surfaceColor,
           elevation: 0,
           title: Text(
             'Transaction History',
             style: context.titleLarge?.copyWith(
               fontWeight: FontWeight.bold,
+              color: context.textPrimary,
             ),
           ),
           bottom: TabBar(
-            indicatorColor: context.primaryGreen,
-            labelColor: context.primaryGreen,
-            unselectedLabelColor: context.mediumGray,
+            indicatorColor: isDark ? context.accentPurple : context.primaryColor,
+            labelColor: isDark ? context.accentPurple : context.primaryColor,
+            unselectedLabelColor: context.textHint,
             tabs: const [
               Tab(text: 'All'),
               Tab(text: 'Credit'),
@@ -213,6 +216,8 @@ class TransactionHistoryPage extends StatelessWidget {
   }
 
   Widget _buildTransactionList(BuildContext context, List<Map<String, dynamic>> transactions) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     if (transactions.isEmpty) {
       return Center(
         child: Column(
@@ -221,20 +226,20 @@ class TransactionHistoryPage extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: context.primaryGreen.withOpacity(0.1),
+                color: (isDark ? context.accentPurple : context.primaryColor).withOpacity(0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 Icons.history,
                 size: 48,
-                color: context.primaryGreen.withOpacity(0.5),
+                color: (isDark ? context.accentPurple : context.primaryColor).withOpacity(0.5),
               ),
             ),
             const SizedBox(height: 16),
             Text(
               'No transactions found',
               style: context.titleMedium?.copyWith(
-                color: context.mediumGray,
+                color: context.textHint,
               ),
             ),
           ],
@@ -253,18 +258,19 @@ class TransactionHistoryPage extends StatelessWidget {
   }
 
   Widget _buildTransactionCard(BuildContext context, Map<String, dynamic> transaction) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final isCredit = transaction['type'] == 'credit';
-    final amountColor = isCredit ? context.success : null;
     final transactionColor = Color(transaction['colorValue'] as int);
     final date = DateTime.parse(transaction['date'].replaceFirst(' ', 'T'));
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       elevation: 0,
+      color: isDark ? context.darkCard : context.white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(context.radiusMD),
         side: BorderSide(
-          color: context.lightGray,
+          color: isDark ? context.darkTextHint.withOpacity(0.3) : context.lightGray,
           width: 1,
         ),
       ),
@@ -309,6 +315,7 @@ class TransactionHistoryPage extends StatelessWidget {
                       transaction['title'] as String,
                       style: context.bodyLarge?.copyWith(
                         fontWeight: FontWeight.w600,
+                        color: context.textPrimary,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -319,13 +326,13 @@ class TransactionHistoryPage extends StatelessWidget {
                         Icon(
                           Icons.access_time,
                           size: 12,
-                          color: context.mediumGray,
+                          color: context.textHint,
                         ),
                         const SizedBox(width: 4),
                         Text(
                           _formatDate(transaction['date']),
                           style: context.labelSmall?.copyWith(
-                            color: context.mediumGray,
+                            color: context.textHint,
                           ),
                         ),
                       ],
@@ -341,7 +348,7 @@ class TransactionHistoryPage extends StatelessWidget {
                   Text(
                     transaction['amount'] as String,
                     style: context.titleMedium?.copyWith(
-                      color: amountColor ?? context.deepNavy,
+                      color: isCredit ? context.success : context.textPrimary,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -353,13 +360,13 @@ class TransactionHistoryPage extends StatelessWidget {
                         vertical: 2,
                       ),
                       decoration: BoxDecoration(
-                        color: context.actionAmber.withOpacity(0.1),
+                        color: context.warning.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(context.radiusXS),
                       ),
                       child: Text(
                         'Pending',
                         style: context.labelSmall?.copyWith(
-                          color: context.actionAmber,
+                          color: context.warning,
                           fontSize: 10,
                           fontWeight: FontWeight.w600,
                         ),

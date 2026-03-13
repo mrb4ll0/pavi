@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pavi/home/wallet/screen/payment_confirmation_screen.dart';
 import 'package:pavi/theme/generalTheme.dart';
-
 import '../models/wallet_model.dart';
 import '../widget/amount_input_field.dart';
 import '../widget/payment_method_card.dart';
@@ -12,7 +11,6 @@ class RechargeScreen extends StatefulWidget {
   @override
   State<RechargeScreen> createState() => _RechargeScreenState();
 }
-
 
 class _RechargeScreenState extends State<RechargeScreen> {
   final _formKey = GlobalKey<FormState>();
@@ -81,19 +79,22 @@ class _RechargeScreenState extends State<RechargeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: context.offWhite,
+      backgroundColor: context.backgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: context.surfaceColor,
         elevation: 0,
         title: Text(
           'Recharge Wallet',
           style: context.titleLarge?.copyWith(
             fontWeight: FontWeight.w600,
+            color: context.textPrimary,
           ),
         ),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: context.deepNavy),
+          icon: Icon(Icons.arrow_back, color: context.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -118,6 +119,7 @@ class _RechargeScreenState extends State<RechargeScreen> {
                 'Payment Method',
                 style: context.bodyMedium?.copyWith(
                   fontWeight: FontWeight.w600,
+                  color: context.textPrimary,
                 ),
               ),
 
@@ -169,10 +171,10 @@ class _RechargeScreenState extends State<RechargeScreen> {
               Container(
                 padding: EdgeInsets.all(context.spacingLG),
                 decoration: BoxDecoration(
-                  color: context.primaryGreen.withOpacity(0.05),
+                  color: (isDark ? context.accentPurple : context.primaryColor).withOpacity(0.05),
                   borderRadius: BorderRadius.circular(context.radiusMD),
                   border: Border.all(
-                    color: context.primaryGreen.withOpacity(0.2),
+                    color: (isDark ? context.accentPurple : context.primaryColor).withOpacity(0.2),
                   ),
                 ),
                 child: Row(
@@ -184,7 +186,7 @@ class _RechargeScreenState extends State<RechargeScreen> {
                         Text(
                           'You\'ll receive',
                           style: context.bodySmall?.copyWith(
-                            color: context.mediumGray,
+                            color: context.textHint,
                           ),
                         ),
                         SizedBox(height: context.spacingXXS),
@@ -192,6 +194,7 @@ class _RechargeScreenState extends State<RechargeScreen> {
                           'Wallet Balance',
                           style: context.bodyMedium?.copyWith(
                             fontWeight: FontWeight.w600,
+                            color: context.textPrimary,
                           ),
                         ),
                       ],
@@ -204,14 +207,14 @@ class _RechargeScreenState extends State<RechargeScreen> {
                               ? '₦0.00'
                               : '₦${double.parse(_amountController.text).toStringAsFixed(2)}',
                           style: context.titleLarge?.copyWith(
-                            color: context.primaryGreen,
+                            color: isDark ? context.accentPurple : context.primaryColor,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         Text(
                           '+ 0 bonus',
                           style: context.labelSmall?.copyWith(
-                            color: context.actionAmber,
+                            color: context.warning,
                           ),
                         ),
                       ],
@@ -229,14 +232,14 @@ class _RechargeScreenState extends State<RechargeScreen> {
                 child: _isLoading
                     ? Center(
                   child: CircularProgressIndicator(
-                    color: context.primaryGreen,
+                    color: isDark ? context.accentPurple : context.primaryColor,
                   ),
                 )
                     : ElevatedButton(
                   onPressed: _processRecharge,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: context.primaryGreen,
-                    foregroundColor: Colors.white,
+                    backgroundColor: isDark ? context.accentPurple : context.primaryColor,
+                    foregroundColor: context.white,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(context.radiusSM),
@@ -247,6 +250,7 @@ class _RechargeScreenState extends State<RechargeScreen> {
                     style: context.labelLarge?.copyWith(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
+                      color: context.white,
                     ),
                   ),
                 ),
@@ -262,13 +266,13 @@ class _RechargeScreenState extends State<RechargeScreen> {
                     Icon(
                       Icons.lock_outline,
                       size: 14,
-                      color: context.mediumGray,
+                      color: context.textHint,
                     ),
                     SizedBox(width: context.spacingXXS),
                     Text(
                       'Secured by Paystack',
                       style: context.labelSmall?.copyWith(
-                        color: context.mediumGray,
+                        color: context.textHint,
                       ),
                     ),
                   ],

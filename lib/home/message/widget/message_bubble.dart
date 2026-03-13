@@ -9,7 +9,6 @@ class MessageBubble extends StatelessWidget {
   final String senderAvatar;
   final bool showAvatar;
 
-
   const MessageBubble({
     super.key,
     required this.message,
@@ -19,6 +18,7 @@ class MessageBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final isMe = message.isMe;
 
     return Container(
@@ -38,7 +38,9 @@ class MessageBubble extends StatelessWidget {
             child: Container(
               padding: EdgeInsets.all(context.spacingSM),
               decoration: BoxDecoration(
-                color: isMe ? context.primaryGreen : Colors.white,
+                color: isMe
+                    ? (isDark ? context.accentPurple : context.primaryColor)
+                    : (isDark ? context.darkCard : context.white),
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(context.radiusMD),
                   topRight: Radius.circular(context.radiusMD),
@@ -49,7 +51,7 @@ class MessageBubble extends StatelessWidget {
                     isMe ? context.radiusXS : context.radiusMD,
                   ),
                 ),
-                boxShadow: context.shadowSM,
+                boxShadow: isDark ? null : context.shadowSM,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -60,7 +62,7 @@ class MessageBubble extends StatelessWidget {
                       child: Text(
                         message.senderName!,
                         style: context.labelSmall?.copyWith(
-                          color: context.primaryGreen,
+                          color: isDark ? context.accentPurple : context.primaryColor,
                           fontWeight: FontWeight.w600,
                           fontSize: 10,
                         ),
@@ -79,12 +81,18 @@ class MessageBubble extends StatelessWidget {
   }
 
   Widget _buildAvatar(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       width: 30,
       height: 30,
       margin: EdgeInsets.only(right: context.spacingXS),
       decoration: BoxDecoration(
-        gradient: context.primaryGradient,
+        gradient: isDark
+            ? LinearGradient(
+          colors: [context.accentPurple, context.accentPurpleDark],
+        )
+            : context.primaryGradient,
         shape: BoxShape.circle,
       ),
       child: Center(
@@ -101,6 +109,8 @@ class MessageBubble extends StatelessWidget {
   }
 
   Widget _buildMessageContent(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     if (message.isVoice) {
       return VoiceMessageWidget(
         duration: message.voiceDuration ?? '0:00',
@@ -116,20 +126,26 @@ class MessageBubble extends StatelessWidget {
       return Text(
         message.text,
         style: context.bodyMedium?.copyWith(
-          color: message.isMe ? Colors.white : context.deepNavy,
+          color: message.isMe
+              ? context.white
+              : context.textPrimary,
         ),
       );
     }
   }
 
   Widget _buildTimeAndStatus(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
           message.formattedTime,
           style: context.labelSmall?.copyWith(
-            color: message.isMe ? Colors.white70 : context.mediumGray,
+            color: message.isMe
+                ? context.white.withOpacity(0.7)
+                : context.textHint,
             fontSize: 9,
           ),
         ),
@@ -148,11 +164,11 @@ class MessageBubble extends StatelessWidget {
     switch (message.status) {
       case MessageStatus.sent:
         icon = Icons.check;
-        color = Colors.white70;
+        color = context.white.withOpacity(0.7);
         break;
       case MessageStatus.delivered:
         icon = Icons.done_all;
-        color = Colors.white70;
+        color = context.white.withOpacity(0.7);
         break;
       case MessageStatus.read:
         icon = Icons.done_all;

@@ -7,11 +7,13 @@ import 'call/postCalling.dart';
 import 'dialerPage.dart';
 
 
+import 'package:flutter/material.dart';
+
+
 class CallScreen extends StatefulWidget {
   final String contactName;
   final String phoneNumber;
   final CallType callType;
-
 
   const CallScreen({
     super.key,
@@ -81,9 +83,12 @@ class _CallScreenState extends State<CallScreen> with SingleTickerProviderStateM
   @override
   Widget build(BuildContext context) {
     final bool isAppToApp = widget.callType == CallType.appToApp;
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
 
+    // Use deepNavy for call screen background regardless of theme for consistency
+    // but we can also make it theme-aware if preferred
     return Scaffold(
-      backgroundColor: context.deepNavy,
+      backgroundColor: isDark ? context.darkBackground : context.textPrimary,
       body: SafeArea(
         child: Column(
           children: [
@@ -94,7 +99,7 @@ class _CallScreenState extends State<CallScreen> with SingleTickerProviderStateM
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   IconButton(
-                    icon: Icon(Icons.keyboard_arrow_down, color: Colors.white),
+                    icon: Icon(Icons.keyboard_arrow_down, color: context.white),
                     onPressed: _endCall,
                   ),
                   Container(
@@ -103,7 +108,7 @@ class _CallScreenState extends State<CallScreen> with SingleTickerProviderStateM
                       vertical: context.spacingXS,
                     ),
                     decoration: BoxDecoration(
-                      color: isAppToApp ? context.primaryGreen : context.actionAmber,
+                      color: isAppToApp ? context.primaryColor : context.warning,
                       borderRadius: BorderRadius.circular(context.radiusSM),
                     ),
                     child: Row(
@@ -111,20 +116,20 @@ class _CallScreenState extends State<CallScreen> with SingleTickerProviderStateM
                         Icon(
                           isAppToApp ? Icons.wifi : Icons.phone,
                           size: 14,
-                          color: Colors.white,
+                          color: context.white,
                         ),
                         SizedBox(width: context.spacingXS),
                         Text(
                           isAppToApp ? 'App-to-App' : 'App-to-Phone',
                           style: context.labelSmall?.copyWith(
-                            color: Colors.white,
+                            color: context.white,
                           ),
                         ),
                       ],
                     ),
                   ),
                   IconButton(
-                    icon: Icon(Icons.more_vert, color: Colors.white),
+                    icon: Icon(Icons.more_vert, color: context.white),
                     onPressed: () {},
                   ),
                 ],
@@ -146,10 +151,10 @@ class _CallScreenState extends State<CallScreen> with SingleTickerProviderStateM
                         decoration: BoxDecoration(
                           gradient: RadialGradient(
                             colors: [
-                              isAppToApp ? context.primaryGreen : context.actionAmber,
+                              isAppToApp ? context.primaryColor : context.warning,
                               isAppToApp
-                                  ? context.primaryGreen.withOpacity(0.5)
-                                  : context.actionAmber.withOpacity(0.5),
+                                  ? context.primaryColor.withOpacity(0.5)
+                                  : context.warning.withOpacity(0.5),
                             ],
                           ),
                           shape: BoxShape.circle,
@@ -159,18 +164,18 @@ class _CallScreenState extends State<CallScreen> with SingleTickerProviderStateM
                             width: 100,
                             height: 100,
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: context.white,
                               shape: BoxShape.circle,
                               border: Border.all(
-                                color: Colors.white,
+                                color: context.white,
                                 width: 3,
                               ),
                             ),
                             child: Center(
                               child: Text(
-                                widget.contactName[0].toUpperCase(),
+                                widget.contactName.isNotEmpty ? widget.contactName[0].toUpperCase() : '?',
                                 style: context.displaySmall?.copyWith(
-                                  color: context.deepNavy,
+                                  color: context.textPrimary,
                                   fontSize: 40,
                                 ),
                               ),
@@ -186,7 +191,7 @@ class _CallScreenState extends State<CallScreen> with SingleTickerProviderStateM
                   Text(
                     widget.contactName,
                     style: context.headlineMedium?.copyWith(
-                      color: Colors.white,
+                      color: context.white,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -196,7 +201,7 @@ class _CallScreenState extends State<CallScreen> with SingleTickerProviderStateM
                     Text(
                       widget.phoneNumber,
                       style: context.bodyLarge?.copyWith(
-                        color: Colors.white70,
+                        color: context.white.withOpacity(0.7),
                       ),
                     ),
                   ],
@@ -210,13 +215,13 @@ class _CallScreenState extends State<CallScreen> with SingleTickerProviderStateM
                       vertical: context.spacingSM,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.1),
+                      color: context.white.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(context.radiusXL),
                     ),
                     child: Text(
                       _formatTime(_callSeconds),
                       style: context.displaySmall?.copyWith(
-                        color: Colors.white,
+                        color: context.white,
                         fontSize: 28,
                       ),
                     ),
@@ -231,7 +236,7 @@ class _CallScreenState extends State<CallScreen> with SingleTickerProviderStateM
                         vertical: context.spacingXS,
                       ),
                       decoration: BoxDecoration(
-                        color: context.primaryGreen.withOpacity(0.2),
+                        color: context.primaryColor.withOpacity(0.2),
                         borderRadius: BorderRadius.circular(context.radiusSM),
                       ),
                       child: Row(
@@ -240,13 +245,13 @@ class _CallScreenState extends State<CallScreen> with SingleTickerProviderStateM
                           Icon(
                             Icons.verified,
                             size: 16,
-                            color: context.primaryGreen,
+                            color: context.primaryColor,
                           ),
                           SizedBox(width: context.spacingXS),
                           Text(
                             'HD Voice',
                             style: context.labelSmall?.copyWith(
-                              color: context.primaryGreen,
+                              color: context.primaryColor,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -262,7 +267,7 @@ class _CallScreenState extends State<CallScreen> with SingleTickerProviderStateM
             Container(
               padding: EdgeInsets.all(context.spacingXL),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.05),
+                color: context.white.withOpacity(0.05),
                 borderRadius: BorderRadius.vertical(
                   top: Radius.circular(context.radiusXL),
                 ),
@@ -300,7 +305,7 @@ class _CallScreenState extends State<CallScreen> with SingleTickerProviderStateM
                         },
                       ),
                       _buildCallControl(
-                        icon: Icons.call_end,
+                        icon: _isOnHold ? Icons.pause : Icons.pause,
                         label: 'Hold',
                         isActive: _isOnHold,
                         onTap: () {
@@ -330,9 +335,9 @@ class _CallScreenState extends State<CallScreen> with SingleTickerProviderStateM
                           ),
                         ],
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.call_end,
-                        color: Colors.white,
+                        color: context.white,
                         size: 30,
                       ),
                     ),
@@ -361,13 +366,13 @@ class _CallScreenState extends State<CallScreen> with SingleTickerProviderStateM
             height: 50,
             decoration: BoxDecoration(
               color: isActive
-                  ? (label == 'Mute' ? context.error : context.primaryGreen)
-                  : Colors.white.withOpacity(0.1),
+                  ? (label == 'Mute' ? context.error : context.primaryColor)
+                  : context.white.withOpacity(0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(
               icon,
-              color: isActive ? Colors.white : Colors.white70,
+              color: isActive ? context.white : context.white.withOpacity(0.7),
               size: 24,
             ),
           ),
@@ -375,7 +380,7 @@ class _CallScreenState extends State<CallScreen> with SingleTickerProviderStateM
           Text(
             label,
             style: context.labelSmall?.copyWith(
-              color: Colors.white70,
+              color: context.white.withOpacity(0.7),
             ),
           ),
         ],

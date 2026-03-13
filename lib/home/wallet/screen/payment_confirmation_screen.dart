@@ -10,23 +10,24 @@ class PaymentConfirmationScreen extends StatelessWidget {
     required this.request,
   });
 
-
-
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: context.offWhite,
+      backgroundColor: context.backgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: context.surfaceColor,
         elevation: 0,
         title: Text(
           'Payment Confirmation',
           style: context.titleLarge?.copyWith(
             fontWeight: FontWeight.w600,
+            color: context.textPrimary,
           ),
         ),
         leading: IconButton(
-          icon: Icon(Icons.close, color: context.deepNavy),
+          icon: Icon(Icons.close, color: context.textPrimary),
           onPressed: () {
             Navigator.popUntil(context, ModalRoute.withName('/'));
           },
@@ -56,7 +57,7 @@ class PaymentConfirmationScreen extends StatelessWidget {
             Text(
               'Payment Successful!',
               style: context.headlineMedium?.copyWith(
-                color: context.deepNavy,
+                color: context.textPrimary,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -66,7 +67,7 @@ class PaymentConfirmationScreen extends StatelessWidget {
             Text(
               'Your wallet has been recharged',
               style: context.bodyLarge?.copyWith(
-                color: context.mediumGray,
+                color: context.textHint,
               ),
             ),
 
@@ -77,9 +78,9 @@ class PaymentConfirmationScreen extends StatelessWidget {
               width: double.infinity,
               padding: EdgeInsets.all(context.spacingLG),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: isDark ? context.darkCard : context.white,
                 borderRadius: BorderRadius.circular(context.radiusLG),
-                boxShadow: context.shadowMD,
+                boxShadow: isDark ? null : context.shadowMD,
               ),
               child: Column(
                 children: [
@@ -126,24 +127,26 @@ class PaymentConfirmationScreen extends StatelessWidget {
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
-                  colors: [context.primaryGreen, context.primaryGreenDark],
+                  colors: isDark
+                      ? [context.accentPurple, context.accentPurpleDark]
+                      : [context.primaryColor, context.primaryPurpleDark],
                 ),
                 borderRadius: BorderRadius.circular(context.radiusLG),
-                boxShadow: context.shadowLG,
+                boxShadow: isDark ? null : context.shadowLG,
               ),
               child: Column(
                 children: [
                   Text(
                     'New Wallet Balance',
                     style: context.bodyMedium?.copyWith(
-                      color: Colors.white70,
+                      color: context.white.withOpacity(0.7),
                     ),
                   ),
                   SizedBox(height: context.spacingSM),
                   Text(
                     '₦${(2500 + request.amount).toStringAsFixed(2)}',
                     style: context.displaySmall?.copyWith(
-                      color: Colors.white,
+                      color: context.white,
                       fontWeight: FontWeight.bold,
                       fontSize: 36,
                     ),
@@ -163,8 +166,10 @@ class PaymentConfirmationScreen extends StatelessWidget {
                       Navigator.popUntil(context, ModalRoute.withName('/'));
                     },
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: context.primaryGreen,
-                      side: BorderSide(color: context.primaryGreen),
+                      foregroundColor: isDark ? context.accentPurple : context.primaryColor,
+                      side: BorderSide(
+                        color: isDark ? context.accentPurple : context.primaryColor,
+                      ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(context.radiusSM),
                       ),
@@ -174,6 +179,7 @@ class PaymentConfirmationScreen extends StatelessWidget {
                       'Home',
                       style: context.bodyMedium?.copyWith(
                         fontWeight: FontWeight.w600,
+                        color: isDark ? context.accentPurple : context.primaryColor,
                       ),
                     ),
                   ),
@@ -185,8 +191,8 @@ class PaymentConfirmationScreen extends StatelessWidget {
                       Navigator.popUntil(context, ModalRoute.withName('/'));
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: context.primaryGreen,
-                      foregroundColor: Colors.white,
+                      backgroundColor: isDark ? context.accentPurple : context.primaryColor,
+                      foregroundColor: context.white,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(context.radiusSM),
@@ -197,7 +203,7 @@ class PaymentConfirmationScreen extends StatelessWidget {
                       'Done',
                       style: context.bodyMedium?.copyWith(
                         fontWeight: FontWeight.w600,
-                        color: Colors.white,
+                        color: context.white,
                       ),
                     ),
                   ),
@@ -219,11 +225,16 @@ class PaymentConfirmationScreen extends StatelessWidget {
         bool isBold = false,
         Color? valueColor,
       }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       padding: EdgeInsets.symmetric(vertical: context.spacingSM),
       decoration: BoxDecoration(
         border: Border(
-          bottom: BorderSide(color: context.lightGray, width: 1),
+          bottom: BorderSide(
+            color: isDark ? context.darkTextHint.withOpacity(0.3) : context.lightGray,
+            width: 1,
+          ),
         ),
       ),
       child: Row(
@@ -232,13 +243,13 @@ class PaymentConfirmationScreen extends StatelessWidget {
           Row(
             children: [
               if (icon != null) ...[
-                Icon(icon, size: 16, color: iconColor ?? context.mediumGray),
+                Icon(icon, size: 16, color: iconColor ?? context.textHint),
                 SizedBox(width: context.spacingXS),
               ],
               Text(
                 label,
                 style: context.bodyMedium?.copyWith(
-                  color: context.mediumGray,
+                  color: context.textHint,
                 ),
               ),
             ],
@@ -247,7 +258,7 @@ class PaymentConfirmationScreen extends StatelessWidget {
             value,
             style: context.bodyMedium?.copyWith(
               fontWeight: isBold ? FontWeight.w600 : FontWeight.normal,
-              color: valueColor ?? context.deepNavy,
+              color: valueColor ?? context.textPrimary,
             ),
           ),
         ],

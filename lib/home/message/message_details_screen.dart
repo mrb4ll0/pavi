@@ -8,7 +8,6 @@ import '../dialer/call_screen.dart';
 class MessageDetailScreen extends StatefulWidget {
   final ChatPreview chat;
 
-
   const MessageDetailScreen({super.key, required this.chat});
 
   @override
@@ -130,7 +129,7 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: const Text('Recording started...'),
-          backgroundColor: context.primaryGreen,
+          backgroundColor: context.success,
           behavior: SnackBarBehavior.floating,
           duration: const Duration(seconds: 2),
         ),
@@ -153,23 +152,28 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: context.offWhite,
+      backgroundColor: context.backgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: context.surfaceColor,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: context.deepNavy),
+          icon: Icon(Icons.arrow_back, color: context.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
         title: _buildAppBarTitle(context),
         actions: [
           IconButton(
-            icon: Icon(Icons.phone, color: context.primaryGreen),
+            icon: Icon(
+              Icons.phone,
+              color: isDark ? context.accentPurple : context.primaryColor,
+            ),
             onPressed: _makeCall,
           ),
           IconButton(
-            icon: Icon(Icons.more_vert, color: context.deepNavy),
+            icon: Icon(Icons.more_vert, color: context.textPrimary),
             onPressed: () {},
           ),
         ],
@@ -218,6 +222,8 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
   }
 
   Widget _buildAppBarTitle(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Row(
       children: [
         Stack(
@@ -228,14 +234,20 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
               decoration: BoxDecoration(
                 gradient: widget.chat.isGroup
                     ? LinearGradient(
-                  colors: [context.actionAmber, context.actionAmberDark],
+                  colors: isDark
+                      ? [context.accentPurple, context.accentPurpleDark]
+                      : [context.warning, context.warning.withOpacity(0.8)],
                 )
-                    : context.primaryGradient,
+                    : (isDark
+                    ? LinearGradient(
+                  colors: [context.accentPurple, context.accentPurpleDark],
+                )
+                    : context.primaryGradient),
                 shape: BoxShape.circle,
               ),
               child: Center(
                 child: widget.chat.isGroup
-                    ? Icon(Icons.group, color: Colors.white, size: 20)
+                    ? Icon(Icons.group, color: context.white, size: 20)
                     : Text(
                   widget.chat.avatar,
                   style: const TextStyle(
@@ -256,7 +268,10 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
                   decoration: BoxDecoration(
                     color: context.success,
                     shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white, width: 2),
+                    border: Border.all(
+                      color: isDark ? context.darkBackground : context.white,
+                      width: 2,
+                    ),
                   ),
                 ),
               ),
@@ -271,12 +286,13 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
                 widget.chat.name,
                 style: context.bodyMedium?.copyWith(
                   fontWeight: FontWeight.w600,
+                  color: context.textPrimary,
                 ),
               ),
               Text(
                 widget.chat.isOnline ? 'Online' : 'Offline',
                 style: context.labelSmall?.copyWith(
-                  color: widget.chat.isOnline ? context.success : context.mediumGray,
+                  color: widget.chat.isOnline ? context.success : context.textHint,
                   fontSize: 11,
                 ),
               ),
@@ -288,13 +304,15 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
   }
 
   Widget _buildInputBar(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       padding: EdgeInsets.all(context.spacingSM),
       decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
+        color: isDark ? context.darkCard : context.white,
+        boxShadow: isDark ? null : [
           BoxShadow(
-            color: context.deepNavy.withOpacity(0.05),
+            color: context.textPrimary.withOpacity(0.05),
             blurRadius: 10,
             offset: const Offset(0, -5),
           ),
@@ -305,7 +323,7 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
           IconButton(
             icon: Icon(
               Icons.emoji_emotions_outlined,
-              color: context.actionAmber,
+              color: context.warning,
             ),
             onPressed: () {
               setState(() {
@@ -323,7 +341,7 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: context.spacingMD),
               decoration: BoxDecoration(
-                color: context.offWhite,
+                color: isDark ? context.darkSurface : context.offWhite,
                 borderRadius: BorderRadius.circular(context.radiusXL),
               ),
               child: Row(
@@ -336,9 +354,12 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
                       decoration: InputDecoration(
                         hintText: 'Type a message...',
                         hintStyle: context.bodyMedium?.copyWith(
-                          color: context.mediumGray,
+                          color: context.textHint,
                         ),
                         border: InputBorder.none,
+                      ),
+                      style: context.bodyMedium?.copyWith(
+                        color: context.textPrimary,
                       ),
                       onSubmitted: (_) => _sendMessage(),
                     ),
@@ -346,7 +367,7 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
                   IconButton(
                     icon: Icon(
                       Icons.attach_file,
-                      color: context.mediumGray,
+                      color: context.textHint,
                       size: 22,
                     ),
                     onPressed: () {},
@@ -371,12 +392,16 @@ class _MessageDetailScreenState extends State<MessageDetailScreen> {
                     ? LinearGradient(
                   colors: [context.error, context.error.withOpacity(0.8)],
                 )
-                    : context.primaryGradient,
+                    : (isDark
+                    ? LinearGradient(
+                  colors: [context.accentPurple, context.accentPurpleDark],
+                )
+                    : context.primaryGradient),
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 _messageController.text.isEmpty ? Icons.mic : Icons.send,
-                color: Colors.white,
+                color: context.white,
                 size: 22,
               ),
             ),

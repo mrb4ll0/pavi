@@ -5,49 +5,63 @@ class AppTheme {
   AppTheme._();
 
   // ============== COLORS ==============
-  // Primary Color: Nigerian Green (#008751) - Trust & Local Relevance
-  static const Color primaryGreen = Color(0xFF008751);
-  static const Color primaryGreenLight = Color(0xFF33A97A);
-  static const Color primaryGreenDark = Color(0xFF00653D);
+  // Primary Colors - Soft sky blue like in the avatar (from the image)
+  static const Color primaryPurple = Color(0xFF60A5FA); // Soft sky blue (was purple)
+  static const Color primaryPurpleLight = Color(0xFF93C5FD); // Lighter sky blue
+  static const Color primaryPurpleDark = Color(0xFF3B82F6); // Slightly darker sky blue
 
-  // Secondary Color: Deep Navy (#1E293B) - Professional Text & Backgrounds
-  static const Color deepNavy = Color(0xFF1E293B);
-  static const Color deepNavyLight = Color(0xFF2D3A4E);
-  static const Color deepNavyDark = Color(0xFF0F172A);
+  // Background Colors - Dark theme (from image)
+  static const Color darkBackground = Color(0xFF000000); // Pure black background
+  static const Color darkSurface = Color(0xFF0A0A0A); // Slightly lighter black for surfaces
+  static const Color darkCard = Color(0xFF121212); // Card background
+  static const Color darkElevated = Color(0xFF1E1E1E); // Elevated surfaces
 
-  // Accent Color: Amber (#F59E0B) - Recharge & Action Buttons
-  static const Color actionAmber = Color(0xFFF59E0B);
-  static const Color actionAmberLight = Color(0xFFFBBF24);
-  static const Color actionAmberDark = Color(0xFFD97706);
+  // Background Colors - Light theme (grey background)
+  static const Color lightBackground = Color(0xFFF5F5F5); // Light grey background
+  static const Color lightSurface = Color(0xFFFFFFFF); // White surfaces
+  static const Color lightCard = Color(0xFFFFFFFF); // White cards
+  static const Color lightElevated = Color(0xFFFAFAFA); // Slightly off-white
 
-  // Semantic Colors
+  // Text Colors - Dark theme
+  static const Color darkTextPrimary = Color(0xFFFFFFFF); // Pure white primary text
+  static const Color darkTextSecondary = Color(0xFFB0B0B0); // Light grey secondary text
+  static const Color darkTextHint = Color(0xFF6B6B6B); // Dimmer text for hints
+
+  // Text Colors - Light theme
+  static const Color lightTextPrimary = Color(0xFF1E1E1E); // Near black primary text
+  static const Color lightTextSecondary = Color(0xFF6B6B6B); // Grey secondary text
+  static const Color lightTextHint = Color(0xFF9E9E9E); // Light grey hint text
+
+  // Accent Colors - Soft sky blue like in the avatar (from the image)
+  static const Color accentPurple = Color(0xFF60A5FA); // Soft sky blue (was purple)
+  static const Color accentPurpleLight = Color(0xFF93C5FD); // Lighter sky blue
+  static const Color accentPurpleDark = Color(0xFF3B82F6); // Slightly darker sky blue
+
+  // Semantic Colors (kept the same)
   static const Color success = Color(0xFF10B981);
   static const Color error = Color(0xFFEF4444);
   static const Color warning = Color(0xFFF59E0B);
   static const Color info = Color(0xFF3B82F6);
 
-  // Neutral Colors
+  // Neutral Colors (shared between themes)
   static const Color white = Color(0xFFFFFFFF);
   static const Color offWhite = Color(0xFFF8FAFC);
   static const Color lightGray = Color(0xFFE2E8F0);
   static const Color mediumGray = Color(0xFF94A3B8);
   static const Color darkGray = Color(0xFF475569);
-  static const Color black = Color(0xFF0F172A);
+  static const Color black = Color(0xFF000000);
 
-  // Alias for backward compatibility
-  static Color get primaryColor => primaryGreen;
-
-  // Gradient Combinations
+  // Gradient Combinations (using sky blue colors)
   static const LinearGradient primaryGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [primaryGreen, primaryGreenDark],
+    colors: [primaryPurple, primaryPurpleDark],
   );
 
   static const LinearGradient accentGradient = LinearGradient(
     begin: Alignment.centerLeft,
     end: Alignment.centerRight,
-    colors: [actionAmber, actionAmberDark],
+    colors: [accentPurple, accentPurpleDark],
   );
 
   // ============== TYPOGRAPHY ==============
@@ -72,14 +86,6 @@ class AppTheme {
   static const FontWeight medium = FontWeight.w500;
   static const FontWeight semiBold = FontWeight.w600;
   static const FontWeight bold = FontWeight.w700;
-
-  // Text Styles
-  static TextStyle get bodyText => const TextStyle(
-    fontFamily: fontFamily,
-    fontSize: fontSizeMD,
-    fontWeight: regular,
-    color: deepNavy,
-  );
 
   // ============== SPACING ==============
   static const double spacingXXS = 2.0;
@@ -110,7 +116,7 @@ class AppTheme {
   // ============== SHADOWS ==============
   static List<BoxShadow> shadowSM = [
     BoxShadow(
-      color: deepNavy.withOpacity(0.05),
+      color: Colors.black.withOpacity(0.05),
       blurRadius: 4,
       offset: const Offset(0, 1),
     ),
@@ -118,7 +124,7 @@ class AppTheme {
 
   static List<BoxShadow> shadowMD = [
     BoxShadow(
-      color: deepNavy.withOpacity(0.08),
+      color: Colors.black.withOpacity(0.08),
       blurRadius: 8,
       offset: const Offset(0, 2),
     ),
@@ -126,7 +132,7 @@ class AppTheme {
 
   static List<BoxShadow> shadowLG = [
     BoxShadow(
-      color: deepNavy.withOpacity(0.12),
+      color: Colors.black.withOpacity(0.12),
       blurRadius: 16,
       offset: const Offset(0, 4),
     ),
@@ -134,58 +140,60 @@ class AppTheme {
 
   static List<BoxShadow> shadowXL = [
     BoxShadow(
-      color: deepNavy.withOpacity(0.16),
+      color: Colors.black.withOpacity(0.16),
       blurRadius: 24,
       offset: const Offset(0, 8),
     ),
   ];
 
+  // Dark theme shadows (subtle due to dark background)
+  static List<BoxShadow> darkShadowSM = [
+    BoxShadow(
+      color: Colors.black.withOpacity(0.3),
+      blurRadius: 4,
+      offset: const Offset(0, 1),
+    ),
+  ];
+
+  static List<BoxShadow> darkShadowMD = [
+    BoxShadow(
+      color: Colors.black.withOpacity(0.4),
+      blurRadius: 8,
+      offset: const Offset(0, 2),
+    ),
+  ];
+
   // ============== BUTTON STYLES ==============
-  static ButtonStyle get primaryButton => ElevatedButton.styleFrom(
-    backgroundColor: primaryGreen,
-    foregroundColor: white,
-    minimumSize: const Size(double.infinity, 48),
-    padding: const EdgeInsets.symmetric(
-      horizontal: spacingLG,
-      vertical: spacingMD,
-    ),
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(radiusSM),
-    ),
-    textStyle: const TextStyle(
-      fontFamily: fontFamily,
-      fontSize: fontSizeMD,
-      fontWeight: semiBold,
-    ),
-    elevation: 0,
-  );
+  static ButtonStyle primaryButton(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return ElevatedButton.styleFrom(
+      backgroundColor: isDark ? accentPurple : primaryPurple,
+      foregroundColor: isDark ? darkTextPrimary : white,
+      minimumSize: const Size(double.infinity, 48),
+      padding: const EdgeInsets.symmetric(
+        horizontal: spacingLG,
+        vertical: spacingMD,
+      ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(radiusSM),
+      ),
+      textStyle: const TextStyle(
+        fontFamily: fontFamily,
+        fontSize: fontSizeMD,
+        fontWeight: semiBold,
+      ),
+      elevation: 0,
+    );
+  }
 
   static ButtonStyle get secondaryButton => OutlinedButton.styleFrom(
-    foregroundColor: primaryGreen,
+    foregroundColor: primaryPurple,
     minimumSize: const Size(double.infinity, 48),
     padding: const EdgeInsets.symmetric(
       horizontal: spacingLG,
       vertical: spacingMD,
     ),
-    side: const BorderSide(color: primaryGreen, width: 1.5),
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(radiusSM),
-    ),
-    textStyle: const TextStyle(
-      fontFamily: fontFamily,
-      fontSize: fontSizeMD,
-      fontWeight: semiBold,
-    ),
-  );
-
-  static ButtonStyle get actionButton => FilledButton.styleFrom(
-    backgroundColor: actionAmber,
-    foregroundColor: deepNavy,
-    minimumSize: const Size(double.infinity, 48),
-    padding: const EdgeInsets.symmetric(
-      horizontal: spacingLG,
-      vertical: spacingMD,
-    ),
+    side: const BorderSide(color: primaryPurple, width: 1.5),
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(radiusSM),
     ),
@@ -198,140 +206,134 @@ class AppTheme {
 
   // ============== INPUT DECORATION ==============
   static InputDecoration inputDecoration({
+    required BuildContext context,
     String? hintText,
     String? labelText,
     IconData? prefixIcon,
     Widget? suffixIcon,
   }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return InputDecoration(
       hintText: hintText,
       labelText: labelText,
-      prefixIcon: prefixIcon != null ? Icon(prefixIcon, size: 20, color: mediumGray) : null,
+      prefixIcon: prefixIcon != null
+          ? Icon(prefixIcon, size: 20, color: isDark ? darkTextSecondary : mediumGray)
+          : null,
       suffixIcon: suffixIcon,
       filled: true,
-      fillColor: white,
+      fillColor: isDark ? darkCard : white,
       contentPadding: const EdgeInsets.symmetric(
         horizontal: spacingLG,
         vertical: spacingMD,
       ),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(radiusSM),
-        borderSide: const BorderSide(color: lightGray, width: 1),
+        borderSide: BorderSide(color: isDark ? darkTextHint : lightGray, width: 1),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(radiusSM),
-        borderSide: const BorderSide(color: lightGray, width: 1),
+        borderSide: BorderSide(color: isDark ? darkTextHint : lightGray, width: 1),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(radiusSM),
-        borderSide: const BorderSide(color: primaryGreen, width: 2),
+        borderSide: const BorderSide(color: primaryPurple, width: 2),
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(radiusSM),
         borderSide: const BorderSide(color: error, width: 1),
       ),
-      labelStyle: const TextStyle(
+      labelStyle: TextStyle(
         fontFamily: fontFamily,
         fontSize: fontSizeMD,
-        color: darkGray,
+        color: isDark ? darkTextSecondary : darkGray,
       ),
-      hintStyle: const TextStyle(
+      hintStyle: TextStyle(
         fontFamily: fontFamily,
         fontSize: fontSizeMD,
-        color: mediumGray,
+        color: isDark ? darkTextHint : mediumGray,
       ),
     );
   }
 
   // ============== TEXT THEME ==============
-  static TextTheme _buildTextTheme(TextTheme base) {
+  static TextTheme _buildTextTheme(TextTheme base, bool isDark) {
+    final textPrimary = isDark ? darkTextPrimary : lightTextPrimary;
+    final textSecondary = isDark ? darkTextSecondary : lightTextSecondary;
+    final textHint = isDark ? darkTextHint : lightTextHint;
+
     return base.copyWith(
       displayLarge: base.displayLarge?.copyWith(
         fontFamily: fontFamily,
         fontSize: fontSize5XL,
         fontWeight: bold,
-        color: deepNavy,
+        color: textPrimary,
       ),
       displayMedium: base.displayMedium?.copyWith(
         fontFamily: fontFamily,
         fontSize: fontSize4XL,
         fontWeight: bold,
-        color: deepNavy,
+        color: textPrimary,
       ),
       displaySmall: base.displaySmall?.copyWith(
         fontFamily: fontFamily,
         fontSize: fontSize3XL,
         fontWeight: bold,
-        color: deepNavy,
+        color: textPrimary,
       ),
       headlineMedium: base.headlineMedium?.copyWith(
         fontFamily: fontFamily,
         fontSize: fontSize2XL,
         fontWeight: semiBold,
-        color: deepNavy,
+        color: textPrimary,
       ),
       headlineSmall: base.headlineSmall?.copyWith(
         fontFamily: fontFamily,
         fontSize: fontSizeXL,
         fontWeight: semiBold,
-        color: deepNavy,
+        color: textPrimary,
       ),
       titleLarge: base.titleLarge?.copyWith(
         fontFamily: fontFamily,
         fontSize: fontSizeLG,
         fontWeight: semiBold,
-        color: deepNavy,
+        color: textPrimary,
       ),
       titleMedium: base.titleMedium?.copyWith(
         fontFamily: fontFamily,
         fontSize: fontSizeMD,
         fontWeight: medium,
-        color: deepNavy,
+        color: textPrimary,
       ),
       titleSmall: base.titleSmall?.copyWith(
         fontFamily: fontFamily,
         fontSize: fontSizeSM,
         fontWeight: medium,
-        color: darkGray,
+        color: textSecondary,
       ),
       bodyLarge: base.bodyLarge?.copyWith(
         fontFamily: fontFamily,
         fontSize: fontSizeMD,
         fontWeight: regular,
-        color: deepNavy,
+        color: textPrimary,
       ),
       bodyMedium: base.bodyMedium?.copyWith(
         fontFamily: fontFamily,
         fontSize: fontSizeSM,
         fontWeight: regular,
-        color: darkGray,
+        color: textSecondary,
       ),
       bodySmall: base.bodySmall?.copyWith(
         fontFamily: fontFamily,
         fontSize: fontSizeXS,
         fontWeight: regular,
-        color: mediumGray,
+        color: textHint,
       ),
       labelLarge: base.labelLarge?.copyWith(
         fontFamily: fontFamily,
         fontSize: fontSizeSM,
         fontWeight: medium,
         letterSpacing: 0.5,
-        color: white,
-      ),
-      labelMedium: base.labelMedium?.copyWith(
-        fontFamily: fontFamily,
-        fontSize: fontSizeXS,
-        fontWeight: medium,
-        letterSpacing: 0.5,
-        color: white,
-      ),
-      labelSmall: base.labelSmall?.copyWith(
-        fontFamily: fontFamily,
-        fontSize: 8.0,
-        fontWeight: medium,
-        letterSpacing: 0.5,
-        color: white,
+        color: accentPurple,
       ),
     );
   }
@@ -340,47 +342,84 @@ class AppTheme {
   static ThemeData lightTheme = ThemeData(
     useMaterial3: true,
     brightness: Brightness.light,
-    primaryColor: primaryGreen,
-    scaffoldBackgroundColor: offWhite,
+    primaryColor: primaryPurple,
+    scaffoldBackgroundColor: lightBackground, // Light grey background
     colorScheme: const ColorScheme.light(
-      primary: primaryGreen,
-      secondary: actionAmber,
-      tertiary: deepNavy,
-      surface: white,
-      background: offWhite,
+      primary: primaryPurple,
+      secondary: accentPurple,
+      surface: lightSurface,
+      background: lightBackground,
       error: error,
       onPrimary: white,
-      onSecondary: deepNavy,
-      onSurface: deepNavy,
-      onBackground: deepNavy,
+      onSecondary: white,
+      onSurface: lightTextPrimary,
+      onBackground: lightTextPrimary,
       onError: white,
     ),
 
     // Text Theme
-    textTheme: _buildTextTheme(const TextTheme()),
+    textTheme: _buildTextTheme(const TextTheme(), false),
 
     // AppBar Theme
-    appBarTheme: const AppBarTheme(
-      backgroundColor: white,
-      foregroundColor: deepNavy,
+    appBarTheme: AppBarTheme(
+      backgroundColor: lightSurface,
+      foregroundColor: lightTextPrimary,
       elevation: 0,
       centerTitle: false,
       titleTextStyle: TextStyle(
         fontFamily: fontFamily,
         fontSize: fontSizeLG,
         fontWeight: semiBold,
-        color: deepNavy,
+        color: lightTextPrimary,
       ),
       iconTheme: IconThemeData(
-        color: deepNavy,
+        color: lightTextPrimary,
         size: 24,
       ),
     ),
 
-    // Button Themes
+    // Card Theme
+    cardTheme: CardThemeData(
+      color: lightCard,
+      elevation: 1,
+      shadowColor: Colors.black.withOpacity(0.05),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(radiusMD),
+      ),
+      clipBehavior: Clip.antiAlias,
+      margin: EdgeInsets.zero,
+    ),
+
+    // Bottom Navigation Bar Theme
+    bottomNavigationBarTheme: BottomNavigationBarThemeData(
+      backgroundColor: lightSurface,
+      selectedItemColor: primaryPurple,
+      unselectedItemColor: lightTextHint,
+      selectedLabelStyle: TextStyle(
+        fontFamily: fontFamily,
+        fontSize: fontSizeXS,
+        fontWeight: medium,
+      ),
+      unselectedLabelStyle: TextStyle(
+        fontFamily: fontFamily,
+        fontSize: fontSizeXS,
+        fontWeight: medium,
+      ),
+      type: BottomNavigationBarType.fixed,
+      elevation: 8,
+    ),
+
+    // Divider Theme
+    dividerTheme: DividerThemeData(
+      color: lightGray.withOpacity(0.5),
+      thickness: 0.5,
+      space: 1,
+    ),
+
+    // Keep other themes consistent but with light colors
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: primaryGreen,
+        backgroundColor: primaryPurple,
         foregroundColor: white,
         minimumSize: const Size(double.infinity, 48),
         padding: const EdgeInsets.symmetric(
@@ -399,108 +438,83 @@ class AppTheme {
       ),
     ),
 
-    filledButtonTheme: FilledButtonThemeData(
-      style: FilledButton.styleFrom(
-        backgroundColor: actionAmber,
-        foregroundColor: deepNavy,
-        minimumSize: const Size(double.infinity, 48),
-        padding: const EdgeInsets.symmetric(
-          horizontal: spacingLG,
-          vertical: spacingMD,
-        ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(radiusSM),
-        ),
-        textStyle: const TextStyle(
-          fontFamily: fontFamily,
-          fontSize: fontSizeMD,
-          fontWeight: semiBold,
-        ),
-      ),
-    ),
-
-    outlinedButtonTheme: OutlinedButtonThemeData(
-      style: OutlinedButton.styleFrom(
-        foregroundColor: primaryGreen,
-        minimumSize: const Size(double.infinity, 48),
-        padding: const EdgeInsets.symmetric(
-          horizontal: spacingLG,
-          vertical: spacingMD,
-        ),
-        side: const BorderSide(color: primaryGreen, width: 1.5),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(radiusSM),
-        ),
-        textStyle: const TextStyle(
-          fontFamily: fontFamily,
-          fontSize: fontSizeMD,
-          fontWeight: semiBold,
-        ),
-      ),
-    ),
-
-    textButtonTheme: TextButtonThemeData(
-      style: TextButton.styleFrom(
-        foregroundColor: primaryGreen,
-        minimumSize: const Size(44, 44),
-        padding: const EdgeInsets.symmetric(
-          horizontal: spacingMD,
-          vertical: spacingSM,
-        ),
-        textStyle: const TextStyle(
-          fontFamily: fontFamily,
-          fontSize: fontSizeMD,
-          fontWeight: medium,
-        ),
-      ),
-    ),
-
-    // Input Decoration Theme
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: white,
+      fillColor: lightSurface,
       contentPadding: const EdgeInsets.symmetric(
         horizontal: spacingLG,
         vertical: spacingMD,
       ),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(radiusSM),
-        borderSide: const BorderSide(color: lightGray, width: 1),
+        borderSide: BorderSide(color: lightGray, width: 1),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(radiusSM),
-        borderSide: const BorderSide(color: lightGray, width: 1),
+        borderSide: BorderSide(color: lightGray, width: 1),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(radiusSM),
-        borderSide: const BorderSide(color: primaryGreen, width: 2),
+        borderSide: const BorderSide(color: primaryPurple, width: 2),
       ),
-      errorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(radiusSM),
-        borderSide: const BorderSide(color: error, width: 1),
-      ),
-      labelStyle: const TextStyle(
+      labelStyle: TextStyle(
         fontFamily: fontFamily,
         fontSize: fontSizeMD,
-        color: darkGray,
+        color: lightTextSecondary,
       ),
-      hintStyle: const TextStyle(
+      hintStyle: TextStyle(
         fontFamily: fontFamily,
         fontSize: fontSizeMD,
-        color: mediumGray,
+        color: lightTextHint,
       ),
-      errorStyle: const TextStyle(
+    ),
+  );
+
+  // ============== DARK THEME ==============
+  static ThemeData darkTheme = ThemeData(
+    useMaterial3: true,
+    brightness: Brightness.dark,
+    primaryColor: accentPurple,
+    scaffoldBackgroundColor: darkBackground, // Pure black background like the image
+    colorScheme: const ColorScheme.dark(
+      primary: accentPurple,
+      secondary: accentPurple,
+      surface: darkSurface,
+      background: darkBackground,
+      error: error,
+      onPrimary: darkTextPrimary,
+      onSecondary: darkTextPrimary,
+      onSurface: darkTextPrimary,
+      onBackground: darkTextPrimary,
+      onError: white,
+    ),
+
+    // Text Theme
+    textTheme: _buildTextTheme(const TextTheme(), true),
+
+    // AppBar Theme
+    appBarTheme: AppBarTheme(
+      backgroundColor: darkBackground, // Match background like in the image
+      foregroundColor: darkTextPrimary,
+      elevation: 0,
+      centerTitle: false,
+      titleTextStyle: TextStyle(
         fontFamily: fontFamily,
-        fontSize: fontSizeSM,
-        color: error,
+        fontSize: fontSizeLG,
+        fontWeight: semiBold,
+        color: darkTextPrimary,
+      ),
+      iconTheme: IconThemeData(
+        color: darkTextPrimary,
+        size: 24,
       ),
     ),
 
     // Card Theme
     cardTheme: CardThemeData(
-      color: white,
-      elevation: 2,
-      shadowColor: deepNavy.withOpacity(0.1),
+      color: darkCard,
+      elevation: 0, // No elevation in the image
+      shadowColor: Colors.transparent,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(radiusMD),
       ),
@@ -508,49 +522,11 @@ class AppTheme {
       margin: EdgeInsets.zero,
     ),
 
-    // Bottom Sheet Theme
-    bottomSheetTheme: const BottomSheetThemeData(
-      backgroundColor: white,
-      elevation: 8,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(radiusLG),
-        ),
-      ),
-    ),
-
-    // Dialog Theme
-    dialogTheme: DialogThemeData(
-      backgroundColor: white,
-      elevation: 8,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(radiusMD),
-      ),
-      titleTextStyle: const TextStyle(
-        fontFamily: fontFamily,
-        fontSize: fontSizeXL,
-        fontWeight: semiBold,
-        color: deepNavy,
-      ),
-      contentTextStyle: const TextStyle(
-        fontFamily: fontFamily,
-        fontSize: fontSizeMD,
-        color: darkGray,
-      ),
-    ),
-
-    // Divider Theme
-    dividerTheme: const DividerThemeData(
-      color: lightGray,
-      thickness: 1,
-      space: 1,
-    ),
-
     // Bottom Navigation Bar Theme
-    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-      backgroundColor: white,
-      selectedItemColor: primaryGreen,
-      unselectedItemColor: mediumGray,
+    bottomNavigationBarTheme: BottomNavigationBarThemeData(
+      backgroundColor: darkBackground, // Match background
+      selectedItemColor: accentPurple, // Sky blue accent like in the avatar
+      unselectedItemColor: darkTextHint,
       selectedLabelStyle: TextStyle(
         fontFamily: fontFamily,
         fontSize: fontSizeXS,
@@ -562,121 +538,185 @@ class AppTheme {
         fontWeight: medium,
       ),
       type: BottomNavigationBarType.fixed,
-      elevation: 8,
+      elevation: 0, // No elevation in the image
     ),
 
-    // Tab Bar Theme
-    tabBarTheme: const TabBarThemeData(
-      labelColor: primaryGreen,
-      unselectedLabelColor: mediumGray,
-      indicatorColor: primaryGreen,
+    // Divider Theme
+    dividerTheme: DividerThemeData(
+      color: darkTextHint.withOpacity(0.3),
+      thickness: 0.5,
+      space: 1,
+    ),
+
+    // Elevated Button Theme
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: accentPurple,
+        foregroundColor: darkTextPrimary,
+        minimumSize: const Size(double.infinity, 48),
+        padding: const EdgeInsets.symmetric(
+          horizontal: spacingLG,
+          vertical: spacingMD,
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(radiusSM),
+        ),
+        textStyle: const TextStyle(
+          fontFamily: fontFamily,
+          fontSize: fontSizeMD,
+          fontWeight: semiBold,
+        ),
+        elevation: 0,
+      ),
+    ),
+
+    // Input Decoration Theme
+    inputDecorationTheme: InputDecorationTheme(
+      filled: true,
+      fillColor: darkCard,
+      contentPadding: const EdgeInsets.symmetric(
+        horizontal: spacingLG,
+        vertical: spacingMD,
+      ),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(radiusSM),
+        borderSide: BorderSide(color: darkTextHint.withOpacity(0.3), width: 1),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(radiusSM),
+        borderSide: BorderSide(color: darkTextHint.withOpacity(0.3), width: 1),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(radiusSM),
+        borderSide: const BorderSide(color: accentPurple, width: 2),
+      ),
       labelStyle: TextStyle(
         fontFamily: fontFamily,
         fontSize: fontSizeMD,
-        fontWeight: medium,
+        color: darkTextSecondary,
       ),
-      unselectedLabelStyle: TextStyle(
+      hintStyle: TextStyle(
         fontFamily: fontFamily,
         fontSize: fontSizeMD,
-        fontWeight: regular,
+        color: darkTextHint,
       ),
     ),
 
-    // Checkbox Theme
-    checkboxTheme: CheckboxThemeData(
-      fillColor: MaterialStateProperty.resolveWith((states) {
-        if (states.contains(MaterialState.selected)) {
-          return primaryGreen;
-        }
-        return null;
-      }),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(radiusXS),
-      ),
+    // Icon Theme
+    iconTheme: IconThemeData(
+      color: darkTextPrimary,
+      size: 24,
     ),
 
-    // Radio Theme
-    radioTheme: RadioThemeData(
-      fillColor: MaterialStateProperty.resolveWith((states) {
-        if (states.contains(MaterialState.selected)) {
-          return primaryGreen;
-        }
-        return mediumGray;
-      }),
+    // List Tile Theme
+    listTileTheme: ListTileThemeData(
+      textColor: darkTextPrimary,
+      iconColor: darkTextSecondary,
+      tileColor: Colors.transparent,
     ),
+  );
 
-    // Switch Theme
-    switchTheme: SwitchThemeData(
-      thumbColor: MaterialStateProperty.resolveWith((states) {
-        if (states.contains(MaterialState.selected)) {
-          return primaryGreen;
-        }
-        return mediumGray;
-      }),
-      trackColor: MaterialStateProperty.resolveWith((states) {
-        if (states.contains(MaterialState.selected)) {
-          return primaryGreenLight;
-        }
-        return lightGray;
-      }),
-    ),
-
-    // Progress Indicator Theme
-    progressIndicatorTheme: const ProgressIndicatorThemeData(
-      color: primaryGreen,
-      circularTrackColor: lightGray,
-      linearTrackColor: lightGray,
-    ),
-
-    // Floating Action Button Theme
-    floatingActionButtonTheme: const FloatingActionButtonThemeData(
-      backgroundColor: actionAmber,
-      foregroundColor: deepNavy,
-      elevation: 4,
-      shape: CircleBorder(),
-    ),
-
-    // Snackbar Theme
-    snackBarTheme: SnackBarThemeData(
-      backgroundColor: deepNavy,
-      contentTextStyle: const TextStyle(
-        fontFamily: fontFamily,
-        fontSize: fontSizeMD,
-        color: white,
-      ),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(radiusSM),
-      ),
-      behavior: SnackBarBehavior.floating,
-    ),
+  static TextStyle get bodyText => const TextStyle(
+    fontFamily: fontFamily,
+    fontSize: fontSizeMD,
+    fontWeight: regular,
+    // Remove the hardcoded color since it will be set by the extension
   );
 }
 
-// ============== EXTENSIONS FOR EASY ACCESS ==============
 extension ThemeExtensions on BuildContext {
-  // Access theme colors easily
-  Color get primaryGreen => AppTheme.primaryGreen;
-  Color get primaryGreenLight => AppTheme.primaryGreenLight;
-  Color get primaryGreenDark => AppTheme.primaryGreenDark;
-  Color get deepNavy => AppTheme.deepNavy;
-  Color get deepNavyLight => AppTheme.deepNavyLight;
-  Color get deepNavyDark => AppTheme.deepNavyDark;
-  Color get actionAmber => AppTheme.actionAmber;
-  Color get actionAmberLight => AppTheme.actionAmberLight;
-  Color get actionAmberDark => AppTheme.actionAmberDark;
-  Color get success => AppTheme.success;
-  Color get error => AppTheme.error;
-  Color get warning => AppTheme.warning;
-  Color get info => AppTheme.info;
+  // ============== PRIMARY COLORS ==============
+  Color get primaryPurple => AppTheme.primaryPurple;
+  Color get primaryPurpleLight => AppTheme.primaryPurpleLight;
+  Color get primaryPurpleDark => AppTheme.primaryPurpleDark;
+  Color get accentPurple => AppTheme.accentPurple;
+  Color get accentPurpleLight => AppTheme.accentPurpleLight;
+  Color get accentPurpleDark => AppTheme.accentPurpleDark;
+
+  // Alias for backward compatibility
+  Color get primaryColor => AppTheme.primaryPurple;
+
+  // ============== BACKGROUND COLORS ==============
+  // Dark theme backgrounds
+  Color get darkBackground => AppTheme.darkBackground;
+  Color get darkSurface => AppTheme.darkSurface;
+  Color get darkCard => AppTheme.darkCard;
+  Color get darkElevated => AppTheme.darkElevated;
+
+  // Light theme backgrounds
+  Color get lightBackground => AppTheme.lightBackground;
+  Color get lightSurface => AppTheme.lightSurface;
+  Color get lightCard => AppTheme.lightCard;
+  Color get lightElevated => AppTheme.lightElevated;
+
+  // Dynamic backgrounds (based on theme)
+  Color get backgroundColor => Theme.of(this).brightness == Brightness.dark
+      ? AppTheme.darkBackground
+      : AppTheme.lightBackground;
+
+  Color get surfaceColor => Theme.of(this).brightness == Brightness.dark
+      ? AppTheme.darkSurface
+      : AppTheme.lightSurface;
+
+  Color get cardColor => Theme.of(this).brightness == Brightness.dark
+      ? AppTheme.darkCard
+      : AppTheme.lightCard;
+
+  // ============== TEXT COLORS ==============
+  // Dark text colors
+  Color get darkTextPrimary => AppTheme.darkTextPrimary;
+  Color get darkTextSecondary => AppTheme.darkTextSecondary;
+  Color get darkTextHint => AppTheme.darkTextHint;
+
+  // Light text colors
+  Color get lightTextPrimary => AppTheme.lightTextPrimary;
+  Color get lightTextSecondary => AppTheme.lightTextSecondary;
+  Color get lightTextHint => AppTheme.lightTextHint;
+
+  // Dynamic text colors (based on theme)
+  Color get textPrimary => Theme.of(this).brightness == Brightness.dark
+      ? AppTheme.darkTextPrimary
+      : AppTheme.lightTextPrimary;
+
+  Color get textSecondary => Theme.of(this).brightness == Brightness.dark
+      ? AppTheme.darkTextSecondary
+      : AppTheme.lightTextSecondary;
+
+  Color get textHint => Theme.of(this).brightness == Brightness.dark
+      ? AppTheme.darkTextHint
+      : AppTheme.lightTextHint;
+
+  // ============== NEUTRAL COLORS ==============
   Color get white => AppTheme.white;
   Color get offWhite => AppTheme.offWhite;
   Color get lightGray => AppTheme.lightGray;
   Color get mediumGray => AppTheme.mediumGray;
   Color get darkGray => AppTheme.darkGray;
   Color get black => AppTheme.black;
-  Color get primaryColor => AppTheme.primaryGreen; // Alias for primaryColor
 
-  // Access text styles easily
+  // ============== SEMANTIC COLORS ==============
+  Color get success => AppTheme.success;
+  Color get error => AppTheme.error;
+  Color get warning => AppTheme.warning;
+  Color get info => AppTheme.info;
+
+  // ============== GRADIENTS ==============
+  LinearGradient get primaryGradient => AppTheme.primaryGradient;
+  LinearGradient get accentGradient => AppTheme.accentGradient;
+
+  // ============== SHADOWS ==============
+  List<BoxShadow> get shadowSM => Theme.of(this).brightness == Brightness.dark
+      ? AppTheme.darkShadowSM
+      : AppTheme.shadowSM;
+
+  List<BoxShadow> get shadowMD => Theme.of(this).brightness == Brightness.dark
+      ? AppTheme.darkShadowMD
+      : AppTheme.shadowMD;
+
+  List<BoxShadow> get shadowLG => AppTheme.shadowLG;
+  List<BoxShadow> get shadowXL => AppTheme.shadowXL;
+
+  // ============== TEXT STYLES ==============
   TextStyle? get displayLarge => Theme.of(this).textTheme.displayLarge;
   TextStyle? get displayMedium => Theme.of(this).textTheme.displayMedium;
   TextStyle? get displaySmall => Theme.of(this).textTheme.displaySmall;
@@ -691,27 +731,115 @@ extension ThemeExtensions on BuildContext {
   TextStyle? get labelLarge => Theme.of(this).textTheme.labelLarge;
   TextStyle? get labelMedium => Theme.of(this).textTheme.labelMedium;
   TextStyle? get labelSmall => Theme.of(this).textTheme.labelSmall;
-  TextStyle get bodyText => AppTheme.bodyText; // Alias for bodyText
 
-  // Access button styles
-  ButtonStyle get primaryButton => AppTheme.primaryButton;
-  ButtonStyle get secondaryButton => AppTheme.secondaryButton;
-  ButtonStyle get actionButton => AppTheme.actionButton;
+  // Alias for bodyText (backward compatibility)
+  TextStyle get bodyText => const TextStyle(
+    fontFamily: AppTheme.fontFamily,
+    fontSize: AppTheme.fontSizeMD,
+    fontWeight: AppTheme.regular,
+  ).copyWith(color: textPrimary);
 
-  // Access input decoration
+  // ============== BUTTON STYLES - FIXED ==============
+  // These are now properties that return ButtonStyle directly
+  ButtonStyle get primaryButton => ElevatedButton.styleFrom(
+    backgroundColor: Theme.of(this).brightness == Brightness.dark
+        ? accentPurple
+        : primaryPurple,
+    foregroundColor: Theme.of(this).brightness == Brightness.dark
+        ? darkTextPrimary
+        : white,
+    minimumSize: const Size(double.infinity, 48),
+    padding: const EdgeInsets.symmetric(
+      horizontal: AppTheme.spacingLG,
+      vertical: AppTheme.spacingMD,
+    ),
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(AppTheme.radiusSM),
+    ),
+    textStyle: const TextStyle(
+      fontFamily: AppTheme.fontFamily,
+      fontSize: AppTheme.fontSizeMD,
+      fontWeight: AppTheme.semiBold,
+    ),
+    elevation: 0,
+  );
+
+  ButtonStyle get secondaryButton => OutlinedButton.styleFrom(
+    foregroundColor: Theme.of(this).brightness == Brightness.dark
+        ? accentPurple
+        : primaryPurple,
+    minimumSize: const Size(double.infinity, 48),
+    padding: const EdgeInsets.symmetric(
+      horizontal: AppTheme.spacingLG,
+      vertical: AppTheme.spacingMD,
+    ),
+    side: BorderSide(
+        color: Theme.of(this).brightness == Brightness.dark
+            ? accentPurple
+            : primaryPurple,
+        width: 1.5
+    ),
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(AppTheme.radiusSM),
+    ),
+    textStyle: const TextStyle(
+      fontFamily: AppTheme.fontFamily,
+      fontSize: AppTheme.fontSizeMD,
+      fontWeight: AppTheme.semiBold,
+    ),
+  );
+
+  // ============== INPUT DECORATION ==============
   InputDecoration inputDecoration({
     String? hintText,
     String? labelText,
     IconData? prefixIcon,
     Widget? suffixIcon,
-  }) => AppTheme.inputDecoration(
-    hintText: hintText,
-    labelText: labelText,
-    prefixIcon: prefixIcon,
-    suffixIcon: suffixIcon,
-  );
+  }) {
+    final isDark = Theme.of(this).brightness == Brightness.dark;
+    return InputDecoration(
+      hintText: hintText,
+      labelText: labelText,
+      prefixIcon: prefixIcon != null
+          ? Icon(prefixIcon, size: 20, color: isDark ? darkTextSecondary : mediumGray)
+          : null,
+      suffixIcon: suffixIcon,
+      filled: true,
+      fillColor: isDark ? darkCard : white,
+      contentPadding: const EdgeInsets.symmetric(
+        horizontal: AppTheme.spacingLG,
+        vertical: AppTheme.spacingMD,
+      ),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(AppTheme.radiusSM),
+        borderSide: BorderSide(color: isDark ? darkTextHint.withOpacity(0.3) : lightGray, width: 1),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(AppTheme.radiusSM),
+        borderSide: BorderSide(color: isDark ? darkTextHint.withOpacity(0.3) : lightGray, width: 1),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(AppTheme.radiusSM),
+        borderSide: BorderSide(color: isDark ? accentPurple : primaryPurple, width: 2),
+      ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(AppTheme.radiusSM),
+        borderSide: const BorderSide(color: AppTheme.error, width: 1),
+      ),
+      labelStyle: TextStyle(
+        fontFamily: AppTheme.fontFamily,
+        fontSize: AppTheme.fontSizeMD,
+        color: isDark ? darkTextSecondary : darkGray,
+      ),
+      hintStyle: TextStyle(
+        fontFamily: AppTheme.fontFamily,
+        fontSize: AppTheme.fontSizeMD,
+        color: isDark ? darkTextHint : mediumGray,
+      ),
+    );
+  }
 
-  // Access spacing easily
+  // ============== SPACING ==============
   double get spacingXXS => AppTheme.spacingXXS;
   double get spacingXS => AppTheme.spacingXS;
   double get spacingSM => AppTheme.spacingSM;
@@ -723,7 +851,7 @@ extension ThemeExtensions on BuildContext {
   double get spacing4XL => AppTheme.spacing4XL;
   double get spacing5XL => AppTheme.spacing5XL;
 
-  // Access border radius easily
+  // ============== BORDER RADIUS ==============
   double get radiusXS => AppTheme.radiusXS;
   double get radiusSM => AppTheme.radiusSM;
   double get radiusMD => AppTheme.radiusMD;
@@ -731,14 +859,4 @@ extension ThemeExtensions on BuildContext {
   double get radiusXL => AppTheme.radiusXL;
   double get radius2XL => AppTheme.radius2XL;
   double get radiusCircular => AppTheme.radiusCircular;
-
-  // Access gradients
-  LinearGradient get primaryGradient => AppTheme.primaryGradient;
-  LinearGradient get accentGradient => AppTheme.accentGradient;
-
-  // Access shadows
-  List<BoxShadow> get shadowSM => AppTheme.shadowSM;
-  List<BoxShadow> get shadowMD => AppTheme.shadowMD;
-  List<BoxShadow> get shadowLG => AppTheme.shadowLG;
-  List<BoxShadow> get shadowXL => AppTheme.shadowXL;
 }

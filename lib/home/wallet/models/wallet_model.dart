@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pavi/theme/generalTheme.dart';
 
-
 enum TransactionType {
   credit,
   debit,
@@ -65,13 +64,15 @@ extension PaymentMethodExtension on PaymentMethod {
   }
 
   Color getColor(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     switch (this) {
       case PaymentMethod.paystack:
         return const Color(0xFF0BA4E0); // Paystack blue
       case PaymentMethod.card:
-        return context.primaryGreen;
+        return isDark ? context.accentPurple : context.primaryColor;
       case PaymentMethod.bankTransfer:
-        return context.actionAmber;
+        return context.warning;
       case PaymentMethod.ussd:
         return context.info;
     }
@@ -155,11 +156,13 @@ class Transaction {
   }
 
   Color getStatusColor(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     switch (status) {
       case TransactionStatus.completed:
         return context.success;
       case TransactionStatus.pending:
-        return context.actionAmber;
+        return context.warning;
       case TransactionStatus.failed:
         return context.error;
       case TransactionStatus.refunded:
@@ -289,13 +292,15 @@ extension PaymentStatusExtension on PaymentStatus {
   }
 
   Color getColor(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     switch (this) {
       case PaymentStatus.success:
         return context.success;
       case PaymentStatus.failed:
         return context.error;
       case PaymentStatus.pending:
-        return context.actionAmber;
+        return context.warning;
     }
   }
 

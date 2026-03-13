@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pavi/theme/generalTheme.dart';
 
-
 class AmountInputField extends StatelessWidget {
   final TextEditingController controller;
   final String? Function(String?)? validator;
@@ -14,10 +13,10 @@ class AmountInputField extends StatelessWidget {
     this.presetAmounts = const [500, 1000, 2000, 5000, 10000],
   });
 
-  
-
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -25,6 +24,7 @@ class AmountInputField extends StatelessWidget {
           'Enter Amount',
           style: context.bodyMedium?.copyWith(
             fontWeight: FontWeight.w600,
+            color: context.textPrimary,
           ),
         ),
 
@@ -33,9 +33,9 @@ class AmountInputField extends StatelessWidget {
         // Amount input
         Container(
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: isDark ? context.darkCard : context.white,
             borderRadius: BorderRadius.circular(context.radiusMD),
-            boxShadow: context.shadowSM,
+            boxShadow: isDark ? null : context.shadowSM,
           ),
           child: TextFormField(
             controller: controller,
@@ -43,6 +43,7 @@ class AmountInputField extends StatelessWidget {
             style: context.titleLarge?.copyWith(
               fontSize: 24,
               fontWeight: FontWeight.w600,
+              color: context.textPrimary,
             ),
             textAlign: TextAlign.center,
             decoration: InputDecoration(
@@ -50,13 +51,13 @@ class AmountInputField extends StatelessWidget {
               prefixStyle: context.titleLarge?.copyWith(
                 fontSize: 24,
                 fontWeight: FontWeight.w600,
-                color: context.mediumGray,
+                color: context.textHint,
               ),
               hintText: '0.00',
               hintStyle: context.titleLarge?.copyWith(
                 fontSize: 24,
                 fontWeight: FontWeight.w600,
-                color: context.lightGray,
+                color: isDark ? context.darkTextHint : context.lightGray,
               ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(context.radiusMD),
@@ -78,7 +79,7 @@ class AmountInputField extends StatelessWidget {
         Text(
           'Quick Select',
           style: context.bodySmall?.copyWith(
-            color: context.mediumGray,
+            color: context.textHint,
           ),
         ),
 
@@ -98,19 +99,19 @@ class AmountInputField extends StatelessWidget {
                   vertical: context.spacingSM,
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: isDark ? context.darkCard : context.white,
                   borderRadius: BorderRadius.circular(context.radiusSM),
                   border: Border.all(
-                    color: context.lightGray,
+                    color: isDark ? context.darkTextHint.withOpacity(0.3) : context.lightGray,
                     width: 1,
                   ),
-                  boxShadow: context.shadowSM,
+                  boxShadow: isDark ? null : context.shadowSM,
                 ),
                 child: Text(
                   '₦${amount.toStringAsFixed(0)}',
                   style: context.bodyMedium?.copyWith(
                     fontWeight: FontWeight.w600,
-                    color: context.deepNavy,
+                    color: context.textPrimary,
                   ),
                 ),
               ),

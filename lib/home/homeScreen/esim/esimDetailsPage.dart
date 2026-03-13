@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pavi/theme/generalTheme.dart';
 
-
 class ESIMDetailsPage extends StatelessWidget {
   final Map<String, dynamic> eSIMData;
 
@@ -23,7 +22,7 @@ class ESIMDetailsPage extends StatelessWidget {
     'purchaseDate': '2024-03-15 10:30:00',
     'expiryDate': '2024-04-14 10:30:00',
     'iccid': '89410200000123456789',
-    'qrCode': 'assets/images/qr_placeholder.png', // Replace with actual QR
+    'qrCode': 'assets/images/qr_placeholder.png',
     'apn': 'internet.ng',
     'phoneNumber': '+234 802 345 6789',
     'coverage': [
@@ -51,15 +50,17 @@ class ESIMDetailsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: context.offWhite,
+      backgroundColor: context.backgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: context.surfaceColor,
         elevation: 0,
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back_ios_new_rounded,
-            color: context.deepNavy,
+            color: context.textPrimary,
           ),
           onPressed: () => Navigator.pop(context),
         ),
@@ -67,13 +68,14 @@ class ESIMDetailsPage extends StatelessWidget {
           'eSIM Details',
           style: context.titleLarge?.copyWith(
             fontWeight: FontWeight.bold,
+            color: context.textPrimary,
           ),
         ),
         actions: [
           IconButton(
             icon: Icon(
               Icons.more_vert,
-              color: context.deepNavy,
+              color: context.textPrimary,
             ),
             onPressed: () {
               _showMenu(context);
@@ -90,9 +92,9 @@ class ESIMDetailsPage extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: isDark ? context.darkCard : context.white,
                 borderRadius: BorderRadius.circular(context.radiusLG),
-                boxShadow: context.shadowSM,
+                boxShadow: isDark ? null : context.shadowSM,
               ),
               child: Column(
                 children: [
@@ -101,7 +103,7 @@ class ESIMDetailsPage extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: context.primaryGreen.withOpacity(0.1),
+                          color: (isDark ? context.accentPurple : context.primaryColor).withOpacity(0.1),
                           borderRadius: BorderRadius.circular(context.radiusMD),
                         ),
                         child: Text(
@@ -118,13 +120,14 @@ class ESIMDetailsPage extends StatelessWidget {
                               eSIMData['country'] ?? 'Nigeria',
                               style: context.titleLarge?.copyWith(
                                 fontWeight: FontWeight.bold,
+                                color: context.textPrimary,
                               ),
                             ),
                             const SizedBox(height: 4),
                             Text(
                               eSIMData['plan'] ?? '5GB Data Plan',
                               style: context.bodyMedium?.copyWith(
-                                color: context.mediumGray,
+                                color: context.textSecondary,
                               ),
                             ),
                           ],
@@ -163,9 +166,9 @@ class ESIMDetailsPage extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: isDark ? context.darkCard : context.white,
                 borderRadius: BorderRadius.circular(context.radiusLG),
-                boxShadow: context.shadowSM,
+                boxShadow: isDark ? null : context.shadowSM,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -177,12 +180,13 @@ class ESIMDetailsPage extends StatelessWidget {
                         'Data Usage',
                         style: context.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
+                          color: context.textPrimary,
                         ),
                       ),
                       Text(
                         '${eSIMData['usage']['used']} / ${eSIMData['usage']['total']}',
                         style: context.bodyMedium?.copyWith(
-                          color: context.primaryGreen,
+                          color: isDark ? context.accentPurple : context.primaryColor,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -193,11 +197,11 @@ class ESIMDetailsPage extends StatelessWidget {
                     borderRadius: BorderRadius.circular(context.radiusXS),
                     child: LinearProgressIndicator(
                       value: (eSIMData['usage']['percentage'] ?? 0) / 100,
-                      backgroundColor: context.lightGray,
+                      backgroundColor: isDark ? context.darkTextHint.withOpacity(0.3) : context.lightGray,
                       valueColor: AlwaysStoppedAnimation<Color>(
                         eSIMData['usage']['percentage'] > 80
                             ? context.error
-                            : context.primaryGreen,
+                            : (isDark ? context.accentPurple : context.primaryColor),
                       ),
                       minHeight: 8,
                     ),
@@ -237,9 +241,9 @@ class ESIMDetailsPage extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: isDark ? context.darkCard : context.white,
                 borderRadius: BorderRadius.circular(context.radiusLG),
-                boxShadow: context.shadowSM,
+                boxShadow: isDark ? null : context.shadowSM,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -248,6 +252,7 @@ class ESIMDetailsPage extends StatelessWidget {
                     'Quick Actions',
                     style: context.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
+                      color: context.textPrimary,
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -258,7 +263,7 @@ class ESIMDetailsPage extends StatelessWidget {
                           context,
                           icon: Icons.add_circle_outline,
                           label: 'Top Up',
-                          color: context.primaryGreen,
+                          color: isDark ? context.accentPurple : context.primaryColor,
                           onTap: () {
                             // Handle top up
                           },
@@ -270,7 +275,7 @@ class ESIMDetailsPage extends StatelessWidget {
                           context,
                           icon: Icons.autorenew,
                           label: 'Renew',
-                          color: context.actionAmber,
+                          color: context.warning,
                           onTap: () {
                             // Handle renew
                           },
@@ -298,7 +303,7 @@ class ESIMDetailsPage extends StatelessWidget {
                           context,
                           icon: Icons.support_agent,
                           label: 'Support',
-                          color: context.deepNavy,
+                          color: context.textSecondary,
                           onTap: () {
                             // Handle support
                           },
@@ -317,9 +322,9 @@ class ESIMDetailsPage extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: isDark ? context.darkCard : context.white,
                 borderRadius: BorderRadius.circular(context.radiusLG),
-                boxShadow: context.shadowSM,
+                boxShadow: isDark ? null : context.shadowSM,
               ),
               child: Column(
                 children: [
@@ -327,6 +332,7 @@ class ESIMDetailsPage extends StatelessWidget {
                     'Scan QR Code to Install',
                     style: context.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
+                      color: context.textPrimary,
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -334,17 +340,17 @@ class ESIMDetailsPage extends StatelessWidget {
                     width: 200,
                     height: 200,
                     decoration: BoxDecoration(
-                      color: context.lightGray.withOpacity(0.3),
+                      color: isDark ? context.darkSurface : context.lightGray.withOpacity(0.3),
                       borderRadius: BorderRadius.circular(context.radiusMD),
                       border: Border.all(
-                        color: context.lightGray,
+                        color: isDark ? context.darkTextHint.withOpacity(0.3) : context.lightGray,
                       ),
                     ),
                     child: Center(
                       child: Icon(
                         Icons.qr_code,
                         size: 120,
-                        color: context.deepNavy.withOpacity(0.3),
+                        color: context.textHint.withOpacity(0.3),
                       ),
                     ),
                   ),
@@ -356,12 +362,12 @@ class ESIMDetailsPage extends StatelessWidget {
                     icon: Icon(
                       Icons.download,
                       size: 18,
-                      color: context.primaryGreen,
+                      color: isDark ? context.accentPurple : context.primaryColor,
                     ),
                     label: Text(
                       'Download QR Code',
                       style: context.bodyMedium?.copyWith(
-                        color: context.primaryGreen,
+                        color: isDark ? context.accentPurple : context.primaryColor,
                       ),
                     ),
                   ),
@@ -376,9 +382,9 @@ class ESIMDetailsPage extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: isDark ? context.darkCard : context.white,
                 borderRadius: BorderRadius.circular(context.radiusLG),
-                boxShadow: context.shadowSM,
+                boxShadow: isDark ? null : context.shadowSM,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -387,6 +393,7 @@ class ESIMDetailsPage extends StatelessWidget {
                     'eSIM Information',
                     style: context.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
+                      color: context.textPrimary,
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -446,9 +453,9 @@ class ESIMDetailsPage extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: isDark ? context.darkCard : context.white,
                 borderRadius: BorderRadius.circular(context.radiusLG),
-                boxShadow: context.shadowSM,
+                boxShadow: isDark ? null : context.shadowSM,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -457,6 +464,7 @@ class ESIMDetailsPage extends StatelessWidget {
                     'Coverage & Features',
                     style: context.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
+                      color: context.textPrimary,
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -466,6 +474,7 @@ class ESIMDetailsPage extends StatelessWidget {
                     'Coverage Areas',
                     style: context.bodyMedium?.copyWith(
                       fontWeight: FontWeight.w600,
+                      color: context.textPrimary,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -479,13 +488,13 @@ class ESIMDetailsPage extends StatelessWidget {
                           vertical: 6,
                         ),
                         decoration: BoxDecoration(
-                          color: context.primaryGreen.withOpacity(0.1),
+                          color: (isDark ? context.accentPurple : context.primaryColor).withOpacity(0.1),
                           borderRadius: BorderRadius.circular(context.radiusSM),
                         ),
                         child: Text(
                           city,
                           style: context.labelSmall?.copyWith(
-                            color: context.primaryGreen,
+                            color: isDark ? context.accentPurple : context.primaryColor,
                           ),
                         ),
                       );
@@ -499,6 +508,7 @@ class ESIMDetailsPage extends StatelessWidget {
                     'Plan Features',
                     style: context.bodyMedium?.copyWith(
                       fontWeight: FontWeight.w600,
+                      color: context.textPrimary,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -511,13 +521,15 @@ class ESIMDetailsPage extends StatelessWidget {
                           Icon(
                             Icons.check_circle,
                             size: 18,
-                            color: context.primaryGreen,
+                            color: isDark ? context.accentPurple : context.primaryColor,
                           ),
                           const SizedBox(width: 12),
                           Expanded(
                             child: Text(
                               feature,
-                              style: context.bodyMedium,
+                              style: context.bodyMedium?.copyWith(
+                                color: context.textSecondary,
+                              ),
                             ),
                           ),
                         ],
@@ -536,7 +548,7 @@ class ESIMDetailsPage extends StatelessWidget {
                 width: double.infinity,
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: isDark ? context.darkCard : context.white,
                   borderRadius: BorderRadius.circular(context.radiusLG),
                   border: Border.all(
                     color: context.error.withOpacity(0.3),
@@ -598,19 +610,20 @@ class ESIMDetailsPage extends StatelessWidget {
           Icon(
             icon,
             size: 20,
-            color: context.mediumGray,
+            color: context.textHint,
           ),
           const SizedBox(height: 4),
           Text(
             value,
             style: context.bodyMedium?.copyWith(
               fontWeight: FontWeight.bold,
+              color: context.textPrimary,
             ),
           ),
           Text(
             label,
             style: context.labelSmall?.copyWith(
-              color: context.mediumGray,
+              color: context.textHint,
             ),
           ),
         ],
@@ -625,6 +638,8 @@ class ESIMDetailsPage extends StatelessWidget {
         required Color color,
         required VoidCallback onTap,
       }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(context.radiusMD),
@@ -661,6 +676,8 @@ class ESIMDetailsPage extends StatelessWidget {
         required IconData icon,
         bool canCopy = false,
       }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Row(
@@ -669,13 +686,13 @@ class ESIMDetailsPage extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(6),
             decoration: BoxDecoration(
-              color: context.primaryGreen.withOpacity(0.1),
+              color: (isDark ? context.accentPurple : context.primaryColor).withOpacity(0.1),
               borderRadius: BorderRadius.circular(context.radiusXS),
             ),
             child: Icon(
               icon,
               size: 14,
-              color: context.primaryGreen,
+              color: isDark ? context.accentPurple : context.primaryColor,
             ),
           ),
           const SizedBox(width: 12),
@@ -686,7 +703,7 @@ class ESIMDetailsPage extends StatelessWidget {
                 Text(
                   label,
                   style: context.labelSmall?.copyWith(
-                    color: context.mediumGray,
+                    color: context.textHint,
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -697,19 +714,19 @@ class ESIMDetailsPage extends StatelessWidget {
                         value,
                         style: context.bodyMedium?.copyWith(
                           fontWeight: FontWeight.w600,
+                          color: context.textPrimary,
                         ),
                       ),
                     ),
                     if (canCopy)
                       IconButton(
                         onPressed: () {
-                          // Copy to clipboard
                           _copyToClipboard(context, value);
                         },
                         icon: Icon(
                           Icons.copy,
                           size: 16,
-                          color: context.primaryGreen,
+                          color: isDark ? context.accentPurple : context.primaryColor,
                         ),
                         padding: EdgeInsets.zero,
                         constraints: const BoxConstraints(),
@@ -725,8 +742,11 @@ class ESIMDetailsPage extends StatelessWidget {
   }
 
   void _showMenu(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     showModalBottomSheet(
       context: context,
+      backgroundColor: isDark ? context.darkSurface : context.white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(
           top: Radius.circular(context.radiusLG),
@@ -738,8 +758,11 @@ class ESIMDetailsPage extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              leading: Icon(Icons.refresh, color: context.primaryGreen),
-              title: const Text('Refresh eSIM'),
+              leading: Icon(Icons.refresh, color: isDark ? context.accentPurple : context.primaryColor),
+              title: Text(
+                'Refresh eSIM',
+                style: TextStyle(color: context.textPrimary),
+              ),
               onTap: () {
                 Navigator.pop(context);
                 // Handle refresh
@@ -747,15 +770,21 @@ class ESIMDetailsPage extends StatelessWidget {
             ),
             ListTile(
               leading: Icon(Icons.share, color: context.info),
-              title: const Text('Share eSIM Details'),
+              title: Text(
+                'Share eSIM Details',
+                style: TextStyle(color: context.textPrimary),
+              ),
               onTap: () {
                 Navigator.pop(context);
                 // Handle share
               },
             ),
             ListTile(
-              leading: Icon(Icons.history, color: context.actionAmber),
-              title: const Text('Usage History'),
+              leading: Icon(Icons.history, color: context.warning),
+              title: Text(
+                'Usage History',
+                style: TextStyle(color: context.textPrimary),
+              ),
               onTap: () {
                 Navigator.pop(context);
                 // Navigate to usage history
@@ -763,7 +792,10 @@ class ESIMDetailsPage extends StatelessWidget {
             ),
             ListTile(
               leading: Icon(Icons.report_problem, color: context.error),
-              title: const Text('Report Issue'),
+              title: Text(
+                'Report Issue',
+                style: TextStyle(color: context.textPrimary),
+              ),
               onTap: () {
                 Navigator.pop(context);
                 // Handle report
@@ -776,13 +808,19 @@ class ESIMDetailsPage extends StatelessWidget {
   }
 
   void _showDeactivateDialog(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
+        backgroundColor: isDark ? context.darkSurface : context.white,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(context.radiusLG),
         ),
-        title: const Text('Deactivate eSIM'),
+        title: Text(
+          'Deactivate eSIM',
+          style: TextStyle(color: context.textPrimary),
+        ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -792,15 +830,16 @@ class ESIMDetailsPage extends StatelessWidget {
               color: context.error,
             ),
             const SizedBox(height: 16),
-            const Text(
+            Text(
               'Are you sure you want to deactivate this eSIM?',
               textAlign: TextAlign.center,
+              style: TextStyle(color: context.textPrimary),
             ),
             const SizedBox(height: 8),
             Text(
               'This action cannot be undone. Any remaining data will be lost.',
               style: context.bodySmall?.copyWith(
-                color: context.mediumGray,
+                color: context.textHint,
               ),
               textAlign: TextAlign.center,
             ),
@@ -809,7 +848,10 @@ class ESIMDetailsPage extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text(
+              'Cancel',
+              style: TextStyle(color: context.textSecondary),
+            ),
           ),
           FilledButton(
             onPressed: () {
@@ -838,15 +880,17 @@ class ESIMDetailsPage extends StatelessWidget {
   }
 
   Color _getStatusColor(String? status, BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     switch (status?.toLowerCase()) {
       case 'active':
         return context.success;
       case 'expired':
         return context.error;
       case 'pending':
-        return context.actionAmber;
+        return context.warning;
       default:
-        return context.mediumGray;
+        return context.textHint;
     }
   }
 

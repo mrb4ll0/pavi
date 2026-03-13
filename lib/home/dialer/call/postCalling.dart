@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:pavi/theme/generalTheme.dart';
 
 
+import 'package:flutter/material.dart';
+
 class PostCallRatingPage extends StatefulWidget {
   final String contactName;
   final String phoneNumber;
   final String callDuration;
-
 
   const PostCallRatingPage({
     super.key,
@@ -79,19 +80,22 @@ class _PostCallRatingPageState extends State<PostCallRatingPage> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: context.offWhite,
+      backgroundColor: context.backgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: context.surfaceColor,
         elevation: 0,
         title: Text(
           'Rate Call',
           style: context.titleLarge?.copyWith(
             fontWeight: FontWeight.w600,
+            color: context.textPrimary,
           ),
         ),
         leading: IconButton(
-          icon: Icon(Icons.close, color: context.deepNavy),
+          icon: Icon(Icons.close, color: context.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -104,9 +108,9 @@ class _PostCallRatingPageState extends State<PostCallRatingPage> {
               margin: EdgeInsets.all(context.spacingLG),
               padding: EdgeInsets.all(context.spacingLG),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: isDark ? context.darkCard : context.white,
                 borderRadius: BorderRadius.circular(context.radiusLG),
-                boxShadow: context.shadowSM,
+                boxShadow: isDark ? null : context.shadowSM,
               ),
               child: Row(
                 children: [
@@ -119,7 +123,7 @@ class _PostCallRatingPageState extends State<PostCallRatingPage> {
                     ),
                     child: Center(
                       child: Text(
-                        widget.contactName[0].toUpperCase(),
+                        widget.contactName.isNotEmpty ? widget.contactName[0].toUpperCase() : '?',
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 24,
@@ -137,12 +141,13 @@ class _PostCallRatingPageState extends State<PostCallRatingPage> {
                           widget.contactName,
                           style: context.titleMedium?.copyWith(
                             fontWeight: FontWeight.w600,
+                            color: context.textPrimary,
                           ),
                         ),
                         Text(
                           widget.phoneNumber,
                           style: context.bodySmall?.copyWith(
-                            color: context.mediumGray,
+                            color: context.textSecondary,
                           ),
                         ),
                         SizedBox(height: context.spacingXS),
@@ -151,13 +156,13 @@ class _PostCallRatingPageState extends State<PostCallRatingPage> {
                             Icon(
                               Icons.timer_outlined,
                               size: 14,
-                              color: context.mediumGray,
+                              color: context.textSecondary,
                             ),
                             SizedBox(width: context.spacingXXS),
                             Text(
                               'Call duration: ${widget.callDuration}',
                               style: context.labelSmall?.copyWith(
-                                color: context.mediumGray,
+                                color: context.textSecondary,
                               ),
                             ),
                           ],
@@ -174,9 +179,9 @@ class _PostCallRatingPageState extends State<PostCallRatingPage> {
               margin: EdgeInsets.symmetric(horizontal: context.spacingLG),
               padding: EdgeInsets.all(context.spacingLG),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: isDark ? context.darkCard : context.white,
                 borderRadius: BorderRadius.circular(context.radiusLG),
-                boxShadow: context.shadowSM,
+                boxShadow: isDark ? null : context.shadowSM,
               ),
               child: Column(
                 children: [
@@ -184,6 +189,7 @@ class _PostCallRatingPageState extends State<PostCallRatingPage> {
                     'How was the call quality?',
                     style: context.titleMedium?.copyWith(
                       fontWeight: FontWeight.w600,
+                      color: context.textPrimary,
                     ),
                   ),
                   SizedBox(height: context.spacingMD),
@@ -200,7 +206,9 @@ class _PostCallRatingPageState extends State<PostCallRatingPage> {
                           padding: EdgeInsets.all(context.spacingXS),
                           child: Icon(
                             index < _rating ? Icons.star : Icons.star_border,
-                            color: index < _rating ? context.actionAmber : context.mediumGray,
+                            color: index < _rating
+                                ? context.warning  // Using warning color (amber) for stars
+                                : context.textHint,
                             size: 40,
                           ),
                         ),
@@ -223,7 +231,7 @@ class _PostCallRatingPageState extends State<PostCallRatingPage> {
                           ? context.error
                           : _rating >= 4
                           ? context.success
-                          : context.actionAmber,
+                          : context.warning,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -238,9 +246,9 @@ class _PostCallRatingPageState extends State<PostCallRatingPage> {
               margin: EdgeInsets.symmetric(horizontal: context.spacingLG),
               padding: EdgeInsets.all(context.spacingLG),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: isDark ? context.darkCard : context.white,
                 borderRadius: BorderRadius.circular(context.radiusLG),
-                boxShadow: context.shadowSM,
+                boxShadow: isDark ? null : context.shadowSM,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -249,6 +257,7 @@ class _PostCallRatingPageState extends State<PostCallRatingPage> {
                     'Quick feedback (optional)',
                     style: context.titleMedium?.copyWith(
                       fontWeight: FontWeight.w600,
+                      color: context.textPrimary,
                     ),
                   ),
                   SizedBox(height: context.spacingMD),
@@ -270,20 +279,26 @@ class _PostCallRatingPageState extends State<PostCallRatingPage> {
                           ),
                           decoration: BoxDecoration(
                             color: isSelected
-                                ? context.primaryGreen
-                                : context.primaryGreen.withOpacity(0.1),
+                                ? (isDark ? context.accentPurple : context.primaryColor)
+                                : (isDark
+                                ? context.darkSurface
+                                : context.primaryColor.withOpacity(0.1)),
                             borderRadius: BorderRadius.circular(context.radiusXL),
                             border: isSelected
                                 ? null
                                 : Border.all(
-                              color: context.lightGray,
+                              color: isDark
+                                  ? context.darkTextHint.withOpacity(0.3)
+                                  : context.lightGray,
                               width: 1,
                             ),
                           ),
                           child: Text(
                             tag,
                             style: context.labelSmall?.copyWith(
-                              color: isSelected ? Colors.white : context.deepNavy,
+                              color: isSelected
+                                  ? (isDark ? context.darkTextPrimary : context.white)
+                                  : context.textPrimary,
                               fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
                             ),
                           ),
@@ -302,9 +317,9 @@ class _PostCallRatingPageState extends State<PostCallRatingPage> {
               margin: EdgeInsets.symmetric(horizontal: context.spacingLG),
               padding: EdgeInsets.all(context.spacingLG),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: isDark ? context.darkCard : context.white,
                 borderRadius: BorderRadius.circular(context.radiusLG),
-                boxShadow: context.shadowSM,
+                boxShadow: isDark ? null : context.shadowSM,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -313,6 +328,7 @@ class _PostCallRatingPageState extends State<PostCallRatingPage> {
                     'Additional comments',
                     style: context.titleMedium?.copyWith(
                       fontWeight: FontWeight.w600,
+                      color: context.textPrimary,
                     ),
                   ),
                   SizedBox(height: context.spacingMD),
@@ -320,26 +336,35 @@ class _PostCallRatingPageState extends State<PostCallRatingPage> {
                     controller: _commentController,
                     maxLines: 4,
                     maxLength: 500,
-                    style: context.bodyLarge,
+                    style: context.bodyLarge?.copyWith(
+                      color: context.textPrimary,
+                    ),
                     decoration: InputDecoration(
                       hintText: 'Tell us more about your call experience...',
                       hintStyle: context.bodyMedium?.copyWith(
-                        color: context.mediumGray,
+                        color: context.textHint,
                       ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(context.radiusMD),
-                        borderSide: BorderSide(color: context.lightGray),
+                        borderSide: BorderSide(
+                          color: isDark ? context.darkTextHint.withOpacity(0.3) : context.lightGray,
+                        ),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(context.radiusMD),
-                        borderSide: BorderSide(color: context.lightGray),
+                        borderSide: BorderSide(
+                          color: isDark ? context.darkTextHint.withOpacity(0.3) : context.lightGray,
+                        ),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(context.radiusMD),
-                        borderSide: BorderSide(color: context.primaryGreen, width: 2),
+                        borderSide: BorderSide(
+                          color: isDark ? context.accentPurple : context.primaryColor,
+                          width: 2,
+                        ),
                       ),
                       filled: true,
-                      fillColor: context.offWhite,
+                      fillColor: isDark ? context.darkSurface : context.offWhite,
                     ),
                   ),
                 ],
@@ -357,19 +382,12 @@ class _PostCallRatingPageState extends State<PostCallRatingPage> {
                 child: _isSubmitting
                     ? Center(
                   child: CircularProgressIndicator(
-                    color: context.primaryGreen,
+                    color: isDark ? context.accentPurple : context.primaryColor,
                   ),
                 )
                     : ElevatedButton(
                   onPressed: _submitRating,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: context.primaryGreen,
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(context.radiusSM),
-                    ),
-                  ),
+                  style: context.primaryButton,
                   child: Text(
                     'Submit Feedback',
                     style: context.labelLarge?.copyWith(

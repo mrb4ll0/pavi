@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:pavi/home/message/widget/chat_tile.dart';
 import 'package:pavi/theme/generalTheme.dart';
-
 import '../../model/messageModel.dart';
 import 'message_details_screen.dart';
-
 
 class MessageListScreen extends StatefulWidget {
   const MessageListScreen({super.key});
@@ -14,7 +12,6 @@ class MessageListScreen extends StatefulWidget {
 }
 
 class _MessageListScreenState extends State<MessageListScreen> {
-
   final List<ChatPreview> _chats = [
     ChatPreview(
       id: '1',
@@ -82,25 +79,28 @@ class _MessageListScreenState extends State<MessageListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: context.offWhite,
+      backgroundColor: context.backgroundColor,
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        backgroundColor: Colors.white,
+        backgroundColor: context.surfaceColor,
         elevation: 0,
         title: Text(
           'Messages',
           style: context.titleLarge?.copyWith(
             fontWeight: FontWeight.w600,
+            color: context.textPrimary,
           ),
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.search, color: context.deepNavy),
+            icon: Icon(Icons.search, color: context.textPrimary),
             onPressed: () {},
           ),
           IconButton(
-            icon: Icon(Icons.more_vert, color: context.deepNavy),
+            icon: Icon(Icons.more_vert, color: context.textPrimary),
             onPressed: () {},
           ),
         ],
@@ -132,16 +132,18 @@ class _MessageListScreenState extends State<MessageListScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {},
-        backgroundColor: context.primaryGreen,
-        child: const Icon(Icons.edit, color: Colors.white),
+        backgroundColor: isDark ? context.accentPurple : context.primaryColor,
+        child: Icon(Icons.edit, color: context.white),
       ),
     );
   }
 
   Widget _buildOnlineContacts(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       height: 100,
-      color: Colors.white,
+      color: isDark ? context.darkSurface : context.white,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         padding: EdgeInsets.symmetric(
@@ -162,7 +164,11 @@ class _MessageListScreenState extends State<MessageListScreen> {
                       width: 50,
                       height: 50,
                       decoration: BoxDecoration(
-                        gradient: context.primaryGradient,
+                        gradient: isDark
+                            ? LinearGradient(
+                          colors: [context.accentPurple, context.accentPurpleDark],
+                        )
+                            : context.primaryGradient,
                         shape: BoxShape.circle,
                       ),
                       child: Center(
@@ -185,7 +191,10 @@ class _MessageListScreenState extends State<MessageListScreen> {
                         decoration: BoxDecoration(
                           color: context.success,
                           shape: BoxShape.circle,
-                          border: Border.all(color: Colors.white, width: 2),
+                          border: Border.all(
+                            color: isDark ? context.darkBackground : context.white,
+                            width: 2,
+                          ),
                         ),
                       ),
                     ),
@@ -196,8 +205,10 @@ class _MessageListScreenState extends State<MessageListScreen> {
                   contact['name']!,
                   style: context.labelSmall?.copyWith(
                     fontSize: 11,
+                    color: context.textSecondary,
                     overflow: TextOverflow.ellipsis,
                   ),
+                  maxLines: 1,
                 ),
               ],
             ),

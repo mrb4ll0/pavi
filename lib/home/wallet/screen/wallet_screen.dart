@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pavi/home/wallet/screen/recharge_screen.dart';
 import 'package:pavi/theme/generalTheme.dart';
-
 import '../models/wallet_model.dart';
 import '../widget/balanceWidget.dart';
 import '../widget/transaction_tile.dart';
@@ -16,7 +15,6 @@ class WalletScreen extends StatefulWidget {
 class _WalletScreenState extends State<WalletScreen> {
   late WalletBalance _balance;
   late List<Transaction> _transactions;
-
 
   @override
   void initState() {
@@ -80,27 +78,30 @@ class _WalletScreenState extends State<WalletScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: context.offWhite,
+      backgroundColor: context.backgroundColor,
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        backgroundColor: Colors.white,
+        backgroundColor: context.surfaceColor,
         elevation: 0,
         title: Text(
           'Wallet',
           style: context.titleLarge?.copyWith(
             fontWeight: FontWeight.w600,
+            color: context.textPrimary,
           ),
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.history, color: context.deepNavy),
+            icon: Icon(Icons.history, color: context.textPrimary),
             onPressed: () {
               // Show full transaction history
             },
           ),
           IconButton(
-            icon: Icon(Icons.more_vert, color: context.deepNavy),
+            icon: Icon(Icons.more_vert, color: context.textPrimary),
             onPressed: () {},
           ),
         ],
@@ -163,9 +164,9 @@ class _WalletScreenState extends State<WalletScreen> {
               margin: EdgeInsets.all(context.spacingLG),
               padding: EdgeInsets.all(context.spacingLG),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: isDark ? context.darkCard : context.white,
                 borderRadius: BorderRadius.circular(context.radiusLG),
-                boxShadow: context.shadowSM,
+                boxShadow: isDark ? null : context.shadowSM,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -177,14 +178,18 @@ class _WalletScreenState extends State<WalletScreen> {
                         'Transaction History',
                         style: context.titleMedium?.copyWith(
                           fontWeight: FontWeight.w600,
+                          color: context.textPrimary,
                         ),
                       ),
                       TextButton(
                         onPressed: () {},
+                        style: TextButton.styleFrom(
+                          foregroundColor: isDark ? context.accentPurple : context.primaryColor,
+                        ),
                         child: Text(
                           'View All',
                           style: context.labelSmall?.copyWith(
-                            color: context.primaryGreen,
+                            color: isDark ? context.accentPurple : context.primaryColor,
                           ),
                         ),
                       ),
@@ -222,12 +227,14 @@ class _WalletScreenState extends State<WalletScreen> {
         required IconData icon,
         required Color color,
       }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       padding: EdgeInsets.all(context.spacingMD),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? context.darkCard : context.white,
         borderRadius: BorderRadius.circular(context.radiusMD),
-        boxShadow: context.shadowSM,
+        boxShadow: isDark ? null : context.shadowSM,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -247,7 +254,7 @@ class _WalletScreenState extends State<WalletScreen> {
                 child: Text(
                   title,
                   style: context.bodySmall?.copyWith(
-                    color: context.mediumGray,
+                    color: context.textHint,
                   ),
                 ),
               ),
@@ -258,6 +265,7 @@ class _WalletScreenState extends State<WalletScreen> {
             value,
             style: context.titleMedium?.copyWith(
               fontWeight: FontWeight.w600,
+              color: context.textPrimary,
             ),
           ),
         ],

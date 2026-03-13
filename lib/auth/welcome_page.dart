@@ -118,7 +118,7 @@ class WelcomeScreen extends StatelessWidget {
                               style: context.labelLarge?.copyWith(
                                 fontSize: 18,
                                 fontWeight: FontWeight.w600,
-                                color: context.deepNavy,
+                                color: context.textPrimary,
                               ),
                             ),
                           ),

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:pavi/theme/generalTheme.dart';
 import '../models/wallet_model.dart';
 
-
 class TransactionTile extends StatelessWidget {
   final Transaction transaction;
   final bool isLast;
@@ -17,6 +16,8 @@ class TransactionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -26,7 +27,7 @@ class TransactionTile extends StatelessWidget {
               ? null
               : Border(
             bottom: BorderSide(
-              color: context.lightGray,
+              color: isDark ? context.darkTextHint.withOpacity(0.3) : context.lightGray,
               width: 1,
             ),
           ),
@@ -50,6 +51,7 @@ class TransactionTile extends StatelessWidget {
                           transaction.title,
                           style: context.bodyMedium?.copyWith(
                             fontWeight: FontWeight.w600,
+                            color: context.textPrimary,
                           ),
                         ),
                       ),
@@ -71,7 +73,7 @@ class TransactionTile extends StatelessWidget {
                         child: Text(
                           transaction.description,
                           style: context.bodySmall?.copyWith(
-                            color: context.mediumGray,
+                            color: context.textHint,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -81,7 +83,7 @@ class TransactionTile extends StatelessWidget {
                       Text(
                         transaction.formattedDate,
                         style: context.labelSmall?.copyWith(
-                          color: context.mediumGray,
+                          color: context.textHint,
                           fontSize: 10,
                         ),
                       ),
@@ -102,13 +104,13 @@ class TransactionTile extends StatelessWidget {
                         Icon(
                           Icons.receipt_outlined,
                           size: 10,
-                          color: context.mediumGray,
+                          color: context.textHint,
                         ),
                         SizedBox(width: context.spacingXXS),
                         Text(
                           'Ref: ${transaction.reference}',
                           style: context.labelSmall?.copyWith(
-                            color: context.mediumGray,
+                            color: context.textHint,
                             fontSize: 8,
                           ),
                         ),
@@ -125,6 +127,8 @@ class TransactionTile extends StatelessWidget {
   }
 
   Widget _buildIcon(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     Color iconColor;
 
     // Determine icon color based on transaction type
@@ -137,10 +141,10 @@ class TransactionTile extends StatelessWidget {
         iconColor = context.error;
         break;
       case TransactionType.callDeduction:
-        iconColor = context.primaryGreen;
+        iconColor = isDark ? context.accentPurple : context.primaryColor;
         break;
       case TransactionType.dataPurchase:
-        iconColor = context.actionAmber;
+        iconColor = context.warning;
         break;
     }
 
@@ -191,6 +195,8 @@ class TransactionTile extends StatelessWidget {
   }
 
   Color _getAmountColor(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     if (transaction.status == TransactionStatus.failed) {
       return context.error;
     }
@@ -202,17 +208,19 @@ class TransactionTile extends StatelessWidget {
       case TransactionType.debit:
       case TransactionType.callDeduction:
       case TransactionType.dataPurchase:
-        return context.deepNavy;
+        return context.textPrimary;
     }
   }
 
   Widget _buildStatusBadge(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     Color badgeColor;
     String statusText;
 
     switch (transaction.status) {
       case TransactionStatus.pending:
-        badgeColor = context.actionAmber;
+        badgeColor = context.warning;
         statusText = 'PENDING';
         break;
       case TransactionStatus.failed:

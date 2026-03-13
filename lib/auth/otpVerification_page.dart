@@ -34,7 +34,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
             // OTP Input
             TextField(
               controller: otpController,
-              decoration: AppTheme.inputDecoration(hintText: 'OTP Code'),
+              decoration: AppTheme.inputDecoration(context:context,hintText: 'OTP Code'),
               keyboardType: TextInputType.number,
             ),
             const SizedBox(height: 16),
@@ -44,7 +44,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
               },
               child: Text(
                 'Resend OTP',
-                style: TextStyle(color: AppTheme.primaryColor),
+                style: TextStyle(color: context.primaryColor),
               ),
             ),
             const SizedBox(height: 32),
@@ -52,7 +52,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
               onPressed: () {
                 // TODO: Implement OTP verification logic
               },
-              style: AppTheme.primaryButton,
+              style: context.primaryButton,
               child: const Text('Verify'),
             ),
           ],

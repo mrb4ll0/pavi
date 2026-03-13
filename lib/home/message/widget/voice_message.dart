@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:pavi/theme/generalTheme.dart';
 
-
 class VoiceMessageWidget extends StatefulWidget {
   final String duration;
   final bool isMe;
   final double progress; // 0.0 to 1.0
-  
 
   const VoiceMessageWidget({
     super.key,
@@ -24,6 +22,8 @@ class _VoiceMessageWidgetState extends State<VoiceMessageWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -37,13 +37,18 @@ class _VoiceMessageWidgetState extends State<VoiceMessageWidget> {
             width: 30,
             height: 30,
             decoration: BoxDecoration(
-              color: (widget.isMe ? Colors.white : context.primaryGreen).withOpacity(0.2),
+              color: (widget.isMe
+                  ? context.white
+                  : (isDark ? context.accentPurple : context.primaryColor)
+              ).withOpacity(0.2),
               shape: BoxShape.circle,
             ),
             child: Icon(
               _isPlaying ? Icons.pause : Icons.play_arrow,
               size: 16,
-              color: widget.isMe ? Colors.white : context.primaryGreen,
+              color: widget.isMe
+                  ? context.white
+                  : (isDark ? context.accentPurple : context.primaryColor),
             ),
           ),
         ),
@@ -55,7 +60,10 @@ class _VoiceMessageWidgetState extends State<VoiceMessageWidget> {
               width: 120,
               height: 4,
               decoration: BoxDecoration(
-                color: (widget.isMe ? Colors.white : context.mediumGray).withOpacity(0.3),
+                color: (widget.isMe
+                    ? context.white
+                    : context.textHint
+                ).withOpacity(0.3),
                 borderRadius: BorderRadius.circular(2),
               ),
               child: FractionallySizedBox(
@@ -63,7 +71,9 @@ class _VoiceMessageWidgetState extends State<VoiceMessageWidget> {
                 widthFactor: widget.progress,
                 child: Container(
                   decoration: BoxDecoration(
-                    color: widget.isMe ? Colors.white : context.primaryGreen,
+                    color: widget.isMe
+                        ? context.white
+                        : (isDark ? context.accentPurple : context.primaryColor),
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -73,7 +83,9 @@ class _VoiceMessageWidgetState extends State<VoiceMessageWidget> {
             Text(
               widget.duration,
               style: context.labelSmall?.copyWith(
-                color: widget.isMe ? Colors.white70 : context.mediumGray,
+                color: widget.isMe
+                    ? context.white.withOpacity(0.7)
+                    : context.textHint,
                 fontSize: 9,
               ),
             ),
