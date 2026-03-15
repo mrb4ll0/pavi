@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:pavi/home/homeScreen/esim/esimDetailsPage.dart';
 import 'package:pavi/home/homeScreen/transaction/transactionHistoryPage.dart';
 import 'package:pavi/home/message/messageListScreen.dart';
-import 'package:pavi/home/wallet/screen/wallet_screen.dart';
+import 'package:pavi/home/wallet/screen/redemptionScreen.dart';
 import '../../core/general/generalMethods.dart';
+import '../../profile/profilePage.dart';
 import '../../theme/generalTheme.dart';
-import '../../virtualNumber/virtual_number_screen.dart';
-import '../dialer/dialerPage.dart';
+import '../dialer/trainingCenter.dart';
 import 'notification.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -21,10 +21,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final List<Widget> _screens = const [
     HomeDashboard(),
-    DialerScreen(),
     MessageListScreen(),
-    WalletScreen(),
-    VirtualNumberPage(),
+    TrainingCenter(),
+    RedemptionScreen(),
+    ProfilePage(),
   ];
 
   @override
@@ -70,24 +70,25 @@ class _HomeScreenState extends State<HomeScreen> {
               label: 'Home',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.phone_outlined),
-              activeIcon: Icon(Icons.phone),
-              label: 'Dialer',
-            ),
-            BottomNavigationBarItem(
               icon: Icon(Icons.message_outlined),
               activeIcon: Icon(Icons.message),
               label: 'Message',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.account_balance_wallet_outlined),
-              activeIcon: Icon(Icons.account_balance_wallet),
-              label: 'Wallet',
+              icon: Icon(Icons.smart_toy_outlined),
+              activeIcon: Icon(Icons.smart_toy),
+              label: 'Training Center',
+            ),
+
+            BottomNavigationBarItem(
+              icon: Icon(Icons.card_giftcard_outlined),
+              activeIcon: Icon(Icons.card_giftcard),
+              label: 'Redemption',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.sim_card_outlined),
-              activeIcon: Icon(Icons.sim_card),
-              label: 'Virtual No',
+              icon: Icon(Icons.person_outline),
+              activeIcon: Icon(Icons.person),
+              label: 'Profile',
             ),
           ],
         ),

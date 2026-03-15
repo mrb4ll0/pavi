@@ -13,6 +13,7 @@ class ChatPreview {
   final MessageType messageType;
   final bool isGroup;
   final String? groupAvatar;
+  bool isRoom;
 
   ChatPreview({
     required this.id,
@@ -25,6 +26,7 @@ class ChatPreview {
     required this.messageType,
     this.isGroup = false,
     this.groupAvatar,
+     this.isRoom = false,
   });
 }
 

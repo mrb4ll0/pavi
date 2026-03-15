@@ -8,7 +8,7 @@ import '../dialer/call_screen.dart';
 class MessageDetailScreen extends StatefulWidget {
   final ChatPreview chat;
 
-  const MessageDetailScreen({super.key, required this.chat});
+  const MessageDetailScreen({super.key, required this.chat, Null Function()? onEarnButtonPressed});
 
   @override
   State<MessageDetailScreen> createState() => _MessageDetailScreenState();

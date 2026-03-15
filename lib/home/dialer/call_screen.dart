@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:pavi/theme/generalTheme.dart';
 import '../../model/messageModel.dart';
 import 'call/postCalling.dart';
-import 'dialerPage.dart';
+import 'trainingCenter.dart';
 
 
 import 'package:flutter/material.dart';
