@@ -912,7 +912,7 @@ class _TrainingCenterState extends State<TrainingCenter> with TickerProviderStat
         ),
         child: Column(
           children: [
-            // Handle bar
+            // Handle bar - Fixed at top
             Container(
               margin: const EdgeInsets.only(top: 12),
               width: 40,
@@ -923,7 +923,7 @@ class _TrainingCenterState extends State<TrainingCenter> with TickerProviderStat
               ),
             ),
 
-            // Header
+            // Header - Fixed
             Padding(
               padding: const EdgeInsets.all(20),
               child: Row(
@@ -954,18 +954,18 @@ class _TrainingCenterState extends State<TrainingCenter> with TickerProviderStat
                   Text(
                     '5/20 done',
                     style: TextStyle(
-                      color: context.textSecondary,
+                      color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.6),
                     ),
                   ),
                   IconButton(
-                    icon: Icon(Icons.close),
+                    icon: const Icon(Icons.close),
                     onPressed: () => Navigator.pop(context),
                   ),
                 ],
               ),
             ),
 
-            // Progress bar
+            // Progress bar - Fixed
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Stack(
@@ -993,124 +993,126 @@ class _TrainingCenterState extends State<TrainingCenter> with TickerProviderStat
 
             const SizedBox(height: 20),
 
-            // Task card
+            // Task card - Scrollable area
             Expanded(
-              child: Container(
-                margin: const EdgeInsets.all(20),
-                padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? const Color(0xFF2A2A2A)
-                      : Colors.grey.shade50,
-                  borderRadius: BorderRadius.circular(30),
-                  border: Border.all(
-                    color: Colors.grey.withOpacity(0.2),
+              child: SingleChildScrollView(
+                child: Container(
+                  margin: const EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? const Color(0xFF2A2A2A)
+                        : Colors.grey.shade50,
+                    borderRadius: BorderRadius.circular(30),
+                    border: Border.all(
+                      color: Colors.grey.withOpacity(0.2),
+                    ),
                   ),
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      task['backgroundImage'],
-                      style: const TextStyle(fontSize: 80),
-                    ),
-                    const SizedBox(height: 24),
-                    Text(
-                      task['title'],
-                      style: context.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min, // Add this
+                    children: [
+                      Text(
+                        task['backgroundImage'],
+                        style: const TextStyle(fontSize: 80),
                       ),
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'Is this a motorcycle?',
-                      style: context.bodyLarge?.copyWith(
-                        fontSize: 18,
+                      const SizedBox(height: 24),
+                      Text(
+                        task['title'],
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 32),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Is this a motorcycle?',
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          fontSize: 18,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 32),
 
-                    // Action buttons
-                    Row(
-                      children: [
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                              _showTaskResultDialog(context, true, task['coinsPerTask']);
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.green,
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30),
+                      // Action buttons
+                      Row(
+                        children: [
+                          Expanded(
+                            child: ElevatedButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                                _showTaskResultDialog(context, true, task['coinsPerTask']);
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.green,
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(vertical: 16),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                              ),
+                              child: const Text(
+                                'YES',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
-                            child: const Text(
-                              'YES',
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: ElevatedButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                                _showTaskResultDialog(context, false, task['coinsPerTask']);
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.red,
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(vertical: 16),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                              ),
+                              child: const Text(
+                                'NO',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 20),
+
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: Text(
+                              'Skip',
                               style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.6),
                               ),
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                              _showTaskResultDialog(context, false, task['coinsPerTask']);
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.red,
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                            ),
-                            child: const Text(
-                              'NO',
+                          const SizedBox(width: 20),
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: Text(
+                              'Exit',
                               style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.6),
                               ),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(context),
-                          child: Text(
-                            'Skip',
-                            style: TextStyle(
-                              color: context.textSecondary,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 20),
-                        TextButton(
-                          onPressed: () => Navigator.pop(context),
-                          child: Text(
-                            'Exit',
-                            style: TextStyle(
-                              color: context.textSecondary,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -1120,6 +1122,7 @@ class _TrainingCenterState extends State<TrainingCenter> with TickerProviderStat
     );
   }
 
+  
   void _showTaskResultDialog(BuildContext context, bool correct, int baseCoins) {
     final coinsEarned = correct ? baseCoins : 2;
 
