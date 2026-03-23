@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pavi/home/homeScreen/esim/esimDetailsPage.dart';
+import 'package:pavi/home/homeScreen/premiumBenefit/premiumBenefit.dart';
+import 'package:pavi/home/homeScreen/startTask/startTaskPage.dart';
 import 'package:pavi/home/homeScreen/transaction/transactionHistoryPage.dart';
 import 'package:pavi/home/message/messageListScreen.dart';
 import 'package:pavi/home/wallet/screen/redemptionScreen.dart';
@@ -7,6 +9,9 @@ import '../../core/general/generalMethods.dart';
 import '../../profile/profilePage.dart';
 import '../../theme/generalTheme.dart';
 import '../dialer/trainingCenter.dart';
+import '../moreService/moreServicePage.dart';
+import '../paybill/paybillPage.dart';
+import 'buyData/buyDataPage.dart';
 import 'notification.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -215,35 +220,320 @@ class HomeDashboard extends StatelessWidget {
                   Row(
                     children: [
                       // Premium feel with subtle shine effect
-                      Container(
-                        padding: EdgeInsets.all(context.spacingXS),
-                        decoration: BoxDecoration(
-                          gradient: RadialGradient(
-                            colors: [
-                              context.accentPurple.withOpacity(0.2),
-                              Colors.transparent,
-                            ],
+                      GestureDetector(
+                        onTap: () {
+                          showModalBottomSheet(
+                            context: context,
+                            isScrollControlled: true,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.vertical(
+                                top: Radius.circular(context.radiusLG),
+                              ),
+                            ),
+                            backgroundColor: context.surfaceColor,
+                            builder: (context) => Container(
+                              padding: EdgeInsets.all(context.spacingLG),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // Header with gradient
+                                  Center(
+                                    child: Container(
+                                      width: 40,
+                                      height: 4,
+                                      decoration: BoxDecoration(
+                                        color: context.textHint.withOpacity(0.3),
+                                        borderRadius: BorderRadius.circular(2),
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(height: context.spacingLG),
+
+                                  // Premium Header
+                                  Row(
+                                    children: [
+                                      Container(
+                                        padding: EdgeInsets.all(context.spacingSM),
+                                        decoration: BoxDecoration(
+                                          gradient: LinearGradient(
+                                            colors: [context.accentPurple, context.accentPurpleDark],
+                                          ),
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: Icon(
+                                          Icons.bolt,
+                                          color: Colors.white,
+                                          size: 24,
+                                        ),
+                                      ),
+                                      SizedBox(width: context.spacingMD),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              'Premium Rewards',
+                                              style: context.titleMedium?.copyWith(
+                                                fontWeight: FontWeight.bold,
+                                                color: context.accentPurple,
+                                              ),
+                                            ),
+                                            Text(
+                                              'Your exclusive benefits await',
+                                              style: context.bodySmall?.copyWith(
+                                                color: context.textHint,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+
+                                  SizedBox(height: context.spacingXL),
+
+                                  // Streak Counter
+                                  Container(
+                                    padding: EdgeInsets.all(context.spacingMD),
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        colors: [
+                                          context.accentPurple.withOpacity(0.1),
+                                          context.accentPurpleDark.withOpacity(0.05),
+                                        ],
+                                      ),
+                                      borderRadius: BorderRadius.circular(context.radiusLG),
+                                      border: Border.all(
+                                        color: context.accentPurple.withOpacity(0.3),
+                                        width: 1,
+                                      ),
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Icon(
+                                              Icons.local_fire_department,
+                                              color: Colors.orange,
+                                              size: 28,
+                                            ),
+                                            SizedBox(width: context.spacingSM),
+                                            Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  'Daily Streak',
+                                                  style: context.bodySmall?.copyWith(
+                                                    color: context.textHint,
+                                                  ),
+                                                ),
+                                                Text(
+                                                  '7 Days',
+                                                  style: context.titleLarge?.copyWith(
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.orange,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                        Container(
+                                          padding: EdgeInsets.symmetric(
+                                            horizontal: context.spacingSM,
+                                            vertical: context.spacingXS,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: Colors.orange.withOpacity(0.2),
+                                            borderRadius: BorderRadius.circular(context.radiusSM),
+                                          ),
+                                          child: Text(
+                                            '+₦500 bonus',
+                                            style: context.labelSmall?.copyWith(
+                                              color: Colors.orange,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+
+                                  SizedBox(height: context.spacingLG),
+
+                                  // Premium Features List
+                                  Text(
+                                    'Premium Benefits',
+                                    style: context.titleSmall?.copyWith(
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                  SizedBox(height: context.spacingMD),
+
+                                  _buildPremiumBenefit(
+                                    context,
+                                    icon: Icons.star,
+                                    title: 'Double Rewards',
+                                    subtitle: 'Earn 2x coins on all tasks',
+                                    badge: 'Active',
+                                    badgeColor: context.success,
+                                  ),
+
+                                  _buildPremiumBenefit(
+                                    context,
+                                    icon: Icons.rocket_launch,
+                                    title: 'Priority Support',
+                                    subtitle: '24/7 dedicated assistance',
+                                    badge: 'Available',
+                                    badgeColor: context.info,
+                                  ),
+
+                                  _buildPremiumBenefit(
+                                    context,
+                                    icon: Icons.card_giftcard,
+                                    title: 'Exclusive Offers',
+                                    subtitle: 'Member-only discounts',
+                                    badge: 'New',
+                                    badgeColor: context.warning,
+                                  ),
+
+                                  SizedBox(height: context.spacingLG),
+
+                                  // Action Button
+                                  SizedBox(
+                                    width: double.infinity,
+                                    child: ElevatedButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                        GeneralMethods.navigateTo(context, PremiumBenefitsPage());
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: context.accentPurple,
+                                        foregroundColor: Colors.white,
+                                        padding: EdgeInsets.symmetric(vertical: context.spacingMD),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(context.radiusMD),
+                                        ),
+                                      ),
+                                      child: Text(
+                                        'View All Benefits',
+                                        style: context.bodyMedium?.copyWith(
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+
+                                  SizedBox(height: context.spacingMD),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          padding: EdgeInsets.all(context.spacingXS),
+                          decoration: BoxDecoration(
+                            gradient: RadialGradient(
+                              colors: [
+                                context.accentPurple.withOpacity(0.2),
+                                Colors.transparent,
+                              ],
+                            ),
+                            shape: BoxShape.circle,
                           ),
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          Icons.bolt,
-                          size: 20,
-                          color: context.accentPurple,
+                          child: Icon(
+                            Icons.bolt,
+                            size: 20,
+                            color: context.accentPurple,
+                          ),
                         ),
                       ),
                       SizedBox(width: context.spacingXS),
-                      Container(
-                        padding: EdgeInsets.all(context.spacingXS),
-                        decoration: BoxDecoration(
-                          color: isDark ? context.darkSurface : context.white,
-                          shape: BoxShape.circle,
-                          boxShadow: isDark ? null : context.shadowSM,
+                      PopupMenuButton<String>(
+                        offset: const Offset(0, 40),
+                        color: context.surfaceColor,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(context.radiusMD),
                         ),
-                        child: Icon(
-                          Icons.more_horiz,
-                          size: 20,
-                          color: context.textPrimary,
+                        onSelected: (value) {
+                          switch (value) {
+                            case 'notifications':
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => NotificationPage()),
+                              );
+                              break;
+                            case 'scan':
+                            // Navigate to scan
+                              break;
+                            case 'help':
+                            // Navigate to help
+                              break;
+                            case 'security':
+                            // Navigate to security
+                              break;
+                            case 'logout':
+                              _showLogoutDialog(context);
+                              break;
+                          }
+                        },
+                        itemBuilder: (context) => [
+                          const PopupMenuItem(
+                            value: 'notifications',
+                            child: ListTile(
+                              leading: Icon(Icons.notifications_outlined, size: 20),
+                              title: Text('Notifications'),
+                              dense: true,
+                            ),
+                          ),
+                          const PopupMenuItem(
+                            value: 'scan',
+                            child: ListTile(
+                              leading: Icon(Icons.qr_code_scanner, size: 20),
+                              title: Text('Scan & Pay'),
+                              dense: true,
+                            ),
+                          ),
+                          const PopupMenuItem(
+                            value: 'help',
+                            child: ListTile(
+                              leading: Icon(Icons.help_outline, size: 20),
+                              title: Text('Help & Support'),
+                              dense: true,
+                            ),
+                          ),
+                          const PopupMenuItem(
+                            value: 'security',
+                            child: ListTile(
+                              leading: Icon(Icons.security, size: 20),
+                              title: Text('Security'),
+                              dense: true,
+                            ),
+                          ),
+                          const PopupMenuDivider(),
+                          PopupMenuItem(
+                            value: 'logout',
+                            child: ListTile(
+                              leading: Icon(Icons.logout, size: 20, color: context.error),
+                              title: Text('Logout', style: TextStyle(color: context.error)),
+                              dense: true,
+                            ),
+                          ),
+                        ],
+                        child: Container(
+                          padding: EdgeInsets.all(context.spacingXS),
+                          decoration: BoxDecoration(
+                            color: isDark ? context.darkSurface : context.white,
+                            shape: BoxShape.circle,
+                            boxShadow: isDark ? null : context.shadowSM,
+                          ),
+                          child: Icon(
+                            Icons.more_horiz,
+                            size: 20,
+                            color: context.textPrimary,
+                          ),
                         ),
                       ),
                     ],
@@ -407,6 +697,8 @@ class HomeDashboard extends StatelessWidget {
                     ),
                   ),
                   SizedBox(height: context.spacingMD),
+                  // In your HomeDashboard class, update the quick actions section:
+
                   Row(
                     children: [
                       Expanded(
@@ -416,6 +708,12 @@ class HomeDashboard extends StatelessWidget {
                           label: 'Buy Data',
                           color: context.info,
                           gradientColors: [context.info, context.info.withOpacity(0.7)],
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => const BuyDataPage()),
+                            );
+                          },
                         ),
                       ),
                       SizedBox(width: context.spacingMD),
@@ -426,6 +724,12 @@ class HomeDashboard extends StatelessWidget {
                           label: 'Pay Bill',
                           color: context.warning,
                           gradientColors: [context.warning, context.warning.withOpacity(0.7)],
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => const PayBillPage()),
+                            );
+                          },
                         ),
                       ),
                     ],
@@ -440,6 +744,12 @@ class HomeDashboard extends StatelessWidget {
                           label: 'Start Task',
                           color: context.success,
                           gradientColors: [context.success, context.success.withOpacity(0.7)],
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => const StartTaskPage()),
+                            );
+                          },
                         ),
                       ),
                       SizedBox(width: context.spacingMD),
@@ -450,6 +760,12 @@ class HomeDashboard extends StatelessWidget {
                           label: 'More',
                           color: context.textSecondary,
                           gradientColors: [context.textSecondary, context.textHint],
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => const MoreServicesPage()),
+                            );
+                          },
                         ),
                       ),
                     ],
@@ -633,12 +949,61 @@ class HomeDashboard extends StatelessWidget {
     );
   }
 
-  Widget _buildLargeQuickAction(BuildContext context, {
-    required IconData icon,
-    required String label,
-    required Color color,
-    required List<Color> gradientColors,
-  }) {
+
+
+  void _showLogoutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: context.surfaceColor,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(context.radiusLG),
+        ),
+        title: Text(
+          'Logout',
+          style: context.titleMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        content: Text(
+          'Are you sure you want to logout?',
+          style: context.bodyMedium,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              'Cancel',
+              style: TextStyle(
+                color: context.textHint,
+              ),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              // TODO: Implement logout logic
+              Navigator.pop(context); // Close dialog
+              Navigator.pop(context); // Go back or to login
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: context.error,
+              foregroundColor: Colors.white,
+            ),
+            child: Text('Logout'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLargeQuickAction(
+      BuildContext context, {
+        required IconData icon,
+        required String label,
+        required Color color,
+        required List<Color> gradientColors,
+        VoidCallback? onTap, // Add this
+      }) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Container(
@@ -662,7 +1027,7 @@ class HomeDashboard extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           borderRadius: BorderRadius.circular(context.radiusLG),
-          onTap: () {
+          onTap: onTap ?? () {
             debugPrint('$label tapped');
           },
           child: Padding(
@@ -793,18 +1158,25 @@ class HomeDashboard extends StatelessWidget {
         children: [
           Row(
             children: [
-              Container(
-                padding: EdgeInsets.all(4),
-                decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
-                  shape: BoxShape.circle,
+              // Replace the bolt Container with:
+
+               Container(
+                  padding: EdgeInsets.all(context.spacingXS),
+                  decoration: BoxDecoration(
+                    gradient: RadialGradient(
+                      colors: [
+                        context.accentPurple.withOpacity(0.2),
+                        Colors.transparent,
+                      ],
+                    ),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.bolt,
+                    size: 20,
+                    color: context.accentPurple,
+                  ),
                 ),
-                child: Icon(
-                  Icons.bolt,
-                  size: 12,
-                  color: color,
-                ),
-              ),
               SizedBox(width: 4),
               Expanded(
                 child: Text(
@@ -877,6 +1249,79 @@ class HomeDashboard extends StatelessWidget {
                   color: color,
                   fontWeight: FontWeight.w600,
                 ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Add this method inside the HomeDashboard class
+  Widget _buildPremiumBenefit(
+      BuildContext context, {
+        required IconData icon,
+        required String title,
+        required String subtitle,
+        required String badge,
+        required Color badgeColor,
+      }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return Padding(
+      padding: EdgeInsets.only(bottom: context.spacingMD),
+      child: Row(
+        children: [
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              color: badgeColor.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(context.radiusMD),
+            ),
+            child: Icon(
+              icon,
+              color: badgeColor,
+              size: 22,
+            ),
+          ),
+          SizedBox(width: context.spacingSM),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: context.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: context.textPrimary,
+                  ),
+                ),
+                SizedBox(height: 2),
+                Text(
+                  subtitle,
+                  style: context.labelSmall?.copyWith(
+                    color: context.textHint,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            padding: EdgeInsets.symmetric(
+              horizontal: context.spacingSM,
+              vertical: context.spacingXXS,
+            ),
+            decoration: BoxDecoration(
+              color: badgeColor.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(context.radiusSM),
+            ),
+            child: Text(
+              badge,
+              style: context.labelSmall?.copyWith(
+                color: badgeColor,
+                fontWeight: FontWeight.w600,
+                fontSize: 11,
               ),
             ),
           ),
